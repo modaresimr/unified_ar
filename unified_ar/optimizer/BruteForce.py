@@ -1,13 +1,13 @@
 from joblib.parallel import Parallel, delayed, parallel_backend
 
-from general.utils import Data, MyTask
-from optimizer.OptLearn import OptLearn
+from unified_ar import Data, MyTask
+from unified_ar.optimizer.OptLearn import OptLearn
 
 import logging
 logger = logging.getLogger(__file__)
 
 
-def method_param_selector(callback,uniquekey):
+def method_param_selector(callback, uniquekey):
     import itertools
     from constants import methods
     s = [methods.preprocessing, methods.segmentation,
@@ -17,13 +17,13 @@ def method_param_selector(callback,uniquekey):
     allpool = []
     for item in permut:
         func = Data('Functions')
-        func.uniquekey=uniquekey
+        func.uniquekey = uniquekey
         func.preprocessor = createFunction(item[0])
         func.segmentor = createFunction(item[1])
         func.activityFetcher = createFunction(item[2])
         func.featureExtractor = createFunction(item[3])
         func.classifier = createFunction(item[4])
-        
+
         func.combiner = createFunction(methods.combiner[0])
         func.classifier_metric = createFunction(methods.classifier_metric[0])
         func.event_metric = createFunction(methods.classifier_metric[0])
@@ -42,9 +42,9 @@ def method_param_selector(callback,uniquekey):
     success, fail = run(allpool, True)
 
     bestJobscore = success[0].result['optq']['q']
-    bestJob=success[0]
+    bestJob = success[0]
     for job in success:
-        if(bestJobscore > job.result['optq']['q']):
+        if (bestJobscore > job.result['optq']['q']):
             bestJobscore = job.result['optq']['q']
             bestJob = job
 
@@ -54,7 +54,7 @@ def method_param_selector(callback,uniquekey):
 def runOptLearn(optl, test=0):
     # try:
     optl.run()
-    optl.success=True   
+    optl.success = True
     # except Exception as e:
     #     if test:
     #         raise e
@@ -77,7 +77,7 @@ def run(allpool, test):
     success = []
     fail = []
     for i in range(len(result)):
-        if(result[i].success):
+        if (result[i].success):
             success.append(result[i])
         else:
             logger.error("!!!FAILED: %d %s", i, result[i].shortname)
@@ -88,9 +88,9 @@ def run(allpool, test):
     logger.debug('finish')
     return success, fail
 
-def createFunction(function):
-    res=function['method']()
-    res.findopt=function['findopt'] if 'findopt' in function else False
-    res.defparams=function['params'] if 'params' in function else []
-    return res
 
+def createFunction(function):
+    res = function['method']()
+    res.findopt = function['findopt'] if 'findopt' in function else False
+    res.defparams = function['params'] if 'params' in function else []
+    return res

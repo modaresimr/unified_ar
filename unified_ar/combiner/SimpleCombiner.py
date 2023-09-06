@@ -1,4 +1,4 @@
-from combiner.combiner_abstract import Combiner
+from .combiner_abstract import Combiner
 from intervaltree.intervaltree import IntervalTree
 import pandas as pd
 import numpy as np
@@ -19,7 +19,7 @@ class SimpleCombiner(Combiner):
         for i in range(len(times)):
             start = times[i][0]
             end = times[i][1]
-            #pclass = np.argmax(predicted[i])
+            # pclass = np.argmax(predicted[i])
             pclass = predicted[i]
 
             if not (pclass in ptree):
@@ -32,7 +32,7 @@ class SimpleCombiner(Combiner):
                 start = times[i-1][1]
                 end = times[i][0]
                 if (end > start):
-                    #pclass = np.argmax(predicted[i])
+                    # pclass = np.argmax(predicted[i])
                     ptree[pclass][start:end] = {
                         'Activity': pclass, 'StartTime': start, 'EndTime': end
                     }
@@ -84,7 +84,7 @@ class EmptyCombiner(Combiner):
             start = times[i]['begin']
             end = times[i]['end']
 
-            #pclass = np.argmax(predicted[i])
+            # pclass = np.argmax(predicted[i])
             pclass = predicted[i]
             if (pclass == 0):
                 continue
@@ -116,7 +116,7 @@ class EmptyCombiner2(Combiner):
 
             start = times[i]['begin']
             end = times[i]['end']
-            #pclass = np.argmax(predicted[i])
+            # pclass = np.argmax(predicted[i])
             pclass = predicted[i]
 
             if (pclass == 0):
@@ -160,12 +160,12 @@ class EmptyCombiner2(Combiner):
 
 
 if __name__ == '__main__':
-    import result_analyse.visualisation as vs
-    import metric.CMbasedMetric as CMbasedMetric
+    import unified_ar.result_analyse.visualisation as vs
+    import unified_ar.metric.CMbasedMetric as CMbasedMetric
     # gt = vs.convert2event(np.array([(65,75), (157,187)]))
     # a  = vs.convert2event(np.array([(66,73), (78,126)]))
-    import general.utils as utils
-    import result_analyse.visualisation as vs
+    import unified_ar.general.utils as utils
+    import unified_ar.result_analyse.visualisation as vs
     r, p = utils.loadState('ali')
     a = utils.loadState('200506_17-08-41-Home1')
 

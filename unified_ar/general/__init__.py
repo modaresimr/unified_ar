@@ -1,3 +1,6 @@
+from . import Cache
+from . import utils
+from . import uiutils
 __import__('pkg_resources').declare_namespace(__name__)
 
 # from os.path import dirname, basename, isfile, join
@@ -9,4 +12,3 @@ __import__('pkg_resources').declare_namespace(__name__)
 # import importlib
 # for pack in __all__:
 #     globals().update(importlib.import_module(basename(dirname(__file__))+'.'+pack).__dict__)
-

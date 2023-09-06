@@ -1,4 +1,4 @@
-from general.utils import MyTask
+from unified_ar import MyTask
 
 
 class AbstractClassifierMetric(MyTask):

@@ -1,10 +1,10 @@
-import combiner.SimpleCombiner
-from metric.CMbasedMetric import CMbasedMetric
+import unified_ar.combiner.SimpleCombiner
+from unified_ar.metric.CMbasedMetric import CMbasedMetric
 from tqdm.auto import tqdm
 import sklearn.metrics
 import pandas as pd
 import os
-import general.utils as utils
+import unified_ar.general.utils as utils
 from ipywidgets import interact, interactive, fixed, interact_manual
 import logging
 logger = logging.getLogger(__file__)
@@ -22,7 +22,7 @@ def getRunTable(run_info, dataset, evalres):
         # pred_events=combin.combine(Sdata.s_event_list,Sdata.set_window,evaldata.predicted)
 
             quality = evaldata.quality
-            #print('Evalution quality fold=%d is %s' % (i, quality))
+            # print('Evalution quality fold=%d is %s' % (i, quality))
             item = {
                 'split': mode,
                 'runname': evaldata.shortrunname,
@@ -45,7 +45,7 @@ def getRunTable(run_info, dataset, evalres):
             if hasattr(evaldata.Sdata, 'label'):
                 cm = sklearn.metrics.confusion_matrix(evaldata.Sdata.label, evaldata.predicted_classes, labels=range(len(dataset.activities)))
                 quality = CMbasedMetric(cm, 'macro')
-                #print('classical quality:%s'%(quality))
+                # print('classical quality:%s'%(quality))
                 item['accuracy'] = quality['accuracy']
                 item['precision'] = quality['precision']
                 item['recall'] = quality['recall']
@@ -70,7 +70,7 @@ def load_run_table(file):
         if (runtable is None):
             res = utils.loadState(file)
             if (len(res) != 3):
-                #raise Error
+                # raise Error
                 logger.warn('File %s can not import!' % file)
                 return
             [run_info, datasetdscr, evalres] = res
@@ -131,7 +131,7 @@ def get_all_runs_table():
     listdir.sort(key=lambda f: os.path.getmtime('save_data/'+f), reverse=True)
     result = []
 
-    import general.utils as utils
+    import unified_ar.general.utils as utils
     result = [r for r in utils.parallelRunner(True, single_runtable_loader, listdir) if not (r is None)]
     return pd.concat(result)
 

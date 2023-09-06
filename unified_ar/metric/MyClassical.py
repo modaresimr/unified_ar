@@ -5,7 +5,7 @@ from intervaltree import intervaltree
 from matplotlib.pylab import plt
 from pandas.core.frame import DataFrame
 from prompt_toolkit.shortcuts import set_title
-import metric.classical
+import unified_ar.metric.classical
 import sklearn
 
 

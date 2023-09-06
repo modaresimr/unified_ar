@@ -13,7 +13,6 @@ logger = logging.getLogger(__file__)
 # Define a Data Object
 
 
-
 # Arg Max in a Dic
 def argmaxdic(dic):
     mx = {'v': 0, 'i': 0}
@@ -131,13 +130,13 @@ def loadState(file, name='data', raiseException=True):
             os.remove(pklfile)
             return res
         # if(name=='data'):
-        # from metric.CMbasedMetric import CMbasedMetric
-        # from metric.event_confusion_matrix import event_confusion_matrix
+        # from unified_ar.metric.CMbasedMetric import CMbasedMetric
+        # from unified_ar.metric.event_confusion_matrix import event_confusion_matrix
         #     [run_info,datasetdscr,evalres]=compress_pickle.load(pklfile+'.lz4')
         #     for i in evalres:
         #         data=evalres[i]['test']
         #         Sdata=data.Sdata
-        #         import combiner.SimpleCombiner
+        #         import unified_ar.combiner.SimpleCombiner
         #         com=combiner.SimpleCombiner.EmptyCombiner2()
         #         evalres[i]['test'].Sdata.pred_events =com.combine(Sdata.s_event_list,Sdata.set_window,data.predicted)
         #         evalres[i]['test'].event_cm     =event_confusion_matrix(Sdata.a_events,Sdata.pred_events,datasetdscr.activities)
@@ -273,7 +272,7 @@ def convertAsghari():
 
 
 def convertSED(name, dataset, pe):
-    import datatool.seddata
+    import unified_ar.datatool.seddata
     ######
     from datetime import datetime
     run_date = datetime.now().strftime('%y%m%d_%H-%M-%S')
@@ -377,7 +376,7 @@ def fastcombine(predicted):
     for i, p in predicted.iterrows():
         start = p['StartTime']
         end = p['EndTime']
-        #pclass = np.argmax(predicted[i])
+        # pclass = np.argmax(predicted[i])
         pclass = p['Activity']
 
         if not (pclass in ptree):
@@ -433,7 +432,7 @@ def reload():
             continue
         # if '_' in f'{module}':
         #     continue
-        if 'UnifiedAR' not in f'{module}':
+        if 'unified_ar' not in f'{module}':
             continue
 
         # print(module)

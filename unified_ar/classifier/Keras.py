@@ -2,7 +2,7 @@ import logging
 import numpy as np
 from tqdm.keras import TqdmCallback
 from sklearn.utils.class_weight import compute_class_weight
-from classifier.classifier_abstract import Classifier
+from .classifier_abstract import Classifier
 import tensorflow as tf
 # import tensorflow_addons as tfa
 

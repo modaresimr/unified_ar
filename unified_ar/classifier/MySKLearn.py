@@ -1,4 +1,4 @@
-from classifier.classifier_abstract import Classifier
+from .classifier_abstract import Classifier
 import sklearn.ensemble
 import sklearn.neighbors
 import sklearn.svm

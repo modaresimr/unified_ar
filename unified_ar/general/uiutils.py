@@ -7,7 +7,7 @@ logging.getLogger('matplotlib.font_manager').disabled = True
 def runPipelineUI():
     global methods
     from ipywidgets import interact, interactive, fixed, interact_manual
-    import constants
+    from unified_ar import constants
     from copy import deepcopy
     if (methods == None):
         methods = deepcopy(constants.methods)
@@ -39,9 +39,9 @@ def runPipelineUI():
 
 
 def loadGemMetricUI():
-    import general.utils as utils
-    import result_analyse.resultloader
-    import result_analyse.visualisation as vs
+    import unified_ar.general.utils as utils
+    import unified_ar.result_analyse.resultloader
+    import unified_ar.result_analyse.visualisation as vs
 
     from ipywidgets import interact, interactive, fixed, interact_manual, widgets
     import numpy as np
@@ -82,7 +82,7 @@ def loadGemMetricUI():
 
                 from matplotlib import pyplot as plt
                 plt.rc_context(rc={'figure.max_open_warning': 0})
-                import result_analyse.SpiderChart
+                import unified_ar.result_analyse.SpiderChart
                 result_analyse.SpiderChart.radar_factory(5, frame='polygon')
                 acount = len(dataset.activities_map)
                 a_fig, a_ax = plt.subplots(acount-1, 1, figsize=(10, acount*.25),)
@@ -135,9 +135,9 @@ def loadGemMetricUI():
 
 
 def loadWardMetricUI():
-    import general.utils as utils
-    import result_analyse.resultloader
-    import result_analyse.visualisation as vs
+    import unified_ar.general.utils as utils
+    import unified_ar.result_analyse.resultloader
+    import unified_ar.result_analyse.visualisation as vs
 
     from ipywidgets import interact, interactive, fixed, interact_manual, widgets
     import numpy as np
@@ -216,10 +216,10 @@ def loadWardMetricUI():
 
 def loadGemMultiUI():
     from ipywidgets import interact, interactive, fixed, interact_manual, widgets
-    import result_analyse.resultloader
-    import result_analyse.kfold_analyse as an
-    import metric.MyMetric
-    import metric.Metrics
+    import unified_ar.result_analyse.resultloader
+    import unified_ar.result_analyse.kfold_analyse as an
+    import unified_ar.metric.MyMetric
+    import unified_ar.metric.Metrics
     # metrics = {'GEM': lambda: metric.Metrics.GEM(),
     #            'GEM_NEW':lambda: metric.Metrics.GEM_NEW(),
     #            'EventCM': lambda:metric.Metrics.EventCM(),
@@ -227,11 +227,11 @@ def loadGemMultiUI():
     #            'Classical': lambda:metric.Metrics.Classical(),
     #            }
     # metrics = metrics.keys()
-    metrics = {'GEM','GEM_NEW','EventCM','Tatbul','Classical'}
-    # import metric.MyMetric as mymetric
-    import metric.TatbulMetric as mymetric
-    import general.utils as utils
-    import result_analyse.visualisation as vs
+    metrics = {'GEM', 'GEM_NEW', 'EventCM', 'Tatbul', 'Classical'}
+    # import unified_ar.metric.MyMetric as mymetric
+    import unified_ar.metric.TatbulMetric as mymetric
+    import unified_ar.general.utils as utils
+    import unified_ar.result_analyse.visualisation as vs
     from ipywidgets import Button, Layout
 
     @interact
@@ -243,7 +243,7 @@ def loadGemMultiUI():
             utils.reload()
             from IPython.display import display
             import pandas as pd
-            import result_analyse.resultloader
+            import unified_ar.result_analyse.resultloader
             run_info = {}
             dataset = {}
             evalres = {}

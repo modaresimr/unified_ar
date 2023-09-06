@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from intervaltree.intervaltree import IntervalTree
-from general.utils import Data
+from unified_ar.general.utils import Data
 
 
 def event_confusion_matrix(r_activities, p_activities, labels):
@@ -117,15 +117,15 @@ def cmTreePlot(tree):
 
 
 if __name__ == '__main__':
-    import result_analyse.visualisation as vs
-    from metric.CMbasedMetric import CMbasedMetric
+    import unified_ar.result_analyse.visualisation as vs
+    from unified_ar.metric.CMbasedMetric import CMbasedMetric
     r = vs.convert2event(np.array([(65, 75), (157, 187)]))
     p = vs.convert2event(np.array([(66, 73), (78, 126)]))
 
     r = vs.convert2event(np.array([(20, 70), (100, 200)]))
     p = vs.convert2event(np.array([(10, 80), (150, 250), (100, 200), (0, 500)]))
 
-    import general.utils as utils
+    import unified_ar.general.utils as utils
     # r, p = utils.loadState('ali')
     cm = event_confusion_matrix(r, p, range(11))
 

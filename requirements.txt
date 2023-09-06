@@ -17,3 +17,8 @@ auto_profiler
 termcolor
 jupyter_ui_poll
 tqdm
+keras
+tensorflow
+# pyactlearn @ git+https://github.com/TinghuiWang/pyActLearn
+# cython
+libsvm

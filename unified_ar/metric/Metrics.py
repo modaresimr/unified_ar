@@ -5,7 +5,7 @@ class GEM:
     classical = False
 
     def eval(self, real_a_event, pred_a_event, acts, debug=0):
-        import metric.MyMetric as mymetric
+        import unified_ar.metric.MyMetric as mymetric
         return mymetric.eval(real_a_event, pred_a_event, acts, debug)
 
     def __str__(self):
@@ -16,7 +16,7 @@ class GEM_NEW:
     classical = False
 
     def eval(self, real_a_event, pred_a_event, acts, debug=0):
-        import metric.GEM_NEW as mymetric
+        import unified_ar.metric.GEM_NEW as mymetric
 
         if 'Activity' in real_a_event.columns:
             real_a_event = real_a_event.rename({'StartTime': 'onset', 'EndTime': 'offset', 'Activity': 'event_label'}, axis=1)
@@ -43,7 +43,7 @@ class Classical:
     classical = True
 
     def eval(self, rlabel, plabel, acts):
-        import metric.MyClassical as myclassical
+        import unified_ar.metric.MyClassical as myclassical
         return myclassical.eval(rlabel, plabel, acts)
 
     def __str__(self):
@@ -54,8 +54,8 @@ class EventCM:
     classical = False
 
     def eval(self, real_a_event, pred_a_event, acts, debug=0):
-        from metric.CMbasedMetric import CMbasedMetric
-        from metric.event_confusion_matrix import event_confusion_matrix
+        from unified_ar.metric.CMbasedMetric import CMbasedMetric
+        from unified_ar.metric.event_confusion_matrix import event_confusion_matrix
         quality = {}
         for act in acts:
             real = real_a_event.loc[real_a_event.Activity == act].copy()
@@ -83,7 +83,7 @@ class Tatbul:
     classical = False
 
     def eval(self, real_a_event, pred_a_event, acts, debug=0):
-        import metric.TatbulMetric as mytatbul
+        import unified_ar.metric.TatbulMetric as mytatbul
         return mytatbul.eval(real_a_event, pred_a_event, acts, debug)
 
     def __str__(self):

@@ -1,8 +1,8 @@
 import tensorflow as tf
 import numpy as np
-import classifier.pal_nn.lstm as lstm
+import unified_ar.classifier.pal_nn.lstm as lstm
 
-from classifier.classifier_abstract import Classifier
+from .classifier_abstract import Classifier
 from pyActLearn.learning.nn.mlp import MLP
 from pyActLearn.learning.nn.sda import SDA
 
@@ -35,15 +35,17 @@ class PAL_NN(Classifier):
     def getmodel(self, inputsize, outputsize):
         raise NotImplementedError
 
-    def _createmodel(self, inputsize, outputsize,update_model=False):
+    def _createmodel(self, inputsize, outputsize, update_model=False):
         if update_model:
-            try:return self.model
-            except:pass
-        self.outputsize=outputsize
-        self.model=self.getmodel(inputsize,outputsize)
+            try:
+                return self.model
+            except:
+                pass
+        self.outputsize = outputsize
+        self.model = self.getmodel(inputsize, outputsize)
         return self.model
 
-    def _train(self, trainset, trainlabel):    
+    def _train(self, trainset, trainlabel):
         self.model.fit(trainset, trainlabel, iter_num=5000, batch_size=100,
                        criterion='monitor_based', summaries_dir='logs')
 
@@ -74,21 +76,20 @@ class PAL_LSTM(PAL_NN):
 
     def getmodel(self, inputsize, outputsize):
         return lstm.LSTM(inputsize, outputsize, num_hidden=1000,
-                               num_units=300, num_skip=100)
-    
-    def train(self, trainset, trainlabel):    
+                         num_units=300, num_skip=100)
+
+    def train(self, trainset, trainlabel):
         train_y = np.zeros((trainlabel.shape[0], self.outputsize))
         for i in range(trainset.shape[0]):
             train_y[i, trainlabel[i]] = 1
-        super().train(trainset,train_y)
+        super().train(trainset, train_y)
 
 
 class PAL_LSTM_Simple(PAL_LSTM):
 
     def getmodel(self, inputsize, outputsize):
         return lstm.SimpleLSTM(inputsize, outputsize, numhidden=1000,
-                                     num_units=300, num_skip=100)
-        
+                               num_units=300, num_skip=100)
 
 
 class PAL_LSTM_Legacy(PAL_LSTM):
@@ -96,7 +97,6 @@ class PAL_LSTM_Legacy(PAL_LSTM):
     def getmodel(self, inputsize, outputsize):
         return lstm.LSTM_Legacy(
             inputsize, outputsize, num_units=300, num_steps=100)
-        
 
 
 class PAL_SDA(PAL_NN):
@@ -105,5 +105,3 @@ class PAL_SDA(PAL_NN):
 
     def getmodel(self, inputsize, outputsize):
         return SDA(inputsize, outputsize, [300, 300, 300])
-    
-    

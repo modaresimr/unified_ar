@@ -1,4 +1,4 @@
-from feature_extraction.feature_abstract import FeatureExtraction
+from .feature_abstract import FeatureExtraction
 import pyActLearn.CASAS.stat_features as sf
 import numpy as np
 import logging
@@ -7,11 +7,11 @@ logger = logging.getLogger(__file__)
 
 class PAL_Features(FeatureExtraction):
     feature_list = {}
-    routines={}
+    routines = {}
 
     def precompute(self, datasetdscr, windows):
         self.max_windowsize = max([len(w) for w in windows])
-        self.datasetdscr=datasetdscr
+        self.datasetdscr = datasetdscr
         normalized = self.normalized
         per_sensor = self.per_sensor
         self.scount = sum(1 for x in self.datasetdscr.sensor_id_map)
@@ -24,7 +24,7 @@ class PAL_Features(FeatureExtraction):
         self._add_feature(sf.SensorElapseTime(normalized=normalized))
         self.fcount = self._count_feature_columns()
         self.sensor_list = {}
-        for i,s in datasetdscr.sensor_desc.iterrows():
+        for i, s in datasetdscr.sensor_desc.iterrows():
             name = s['ItemName']
             self.sensor_list[name] = {'name': name}
             self.sensor_list[name]['index'] = datasetdscr.sensor_id_map_inverse[name]
@@ -37,15 +37,15 @@ class PAL_Features(FeatureExtraction):
         f = self._calculate_stat_features(window)
         self.lastwindow = window
         return f
-    def featureExtract2(self,s_event_list,idx):
-        window=s_event_list
-        f = self._calculate_stat_features(window,idx)
+
+    def featureExtract2(self, s_event_list, idx):
+        window = s_event_list
+        f = self._calculate_stat_features(window, idx)
         self.lastwindow = idx
         return f
 
-
     # region FeatureCalculation
-    def _calculate_stat_features(self, window,idx):
+    def _calculate_stat_features(self, window, idx):
         """Populate the feature vector with statistical features using sliding window
         """
         num_feature_columns = self._count_feature_columns()
@@ -55,21 +55,21 @@ class PAL_Features(FeatureExtraction):
             if routine.enabled:
                 routine.clear()
 
-        return self._calculate_window_feature(window,idx)
+        return self._calculate_window_feature(window, idx)
 
-    def _conver_window2eventlist(self, window,idx):
+    def _conver_window2eventlist(self, window, idx):
         event_list = []
         for i in range(0, idx.shape[0]):
             cur_data_dict = {
                 'datetime':     window[idx[i], 1],
                 'sensor_id':    window[idx[i], 0],
-                'sensor_status':window[idx[i], 2],
+                'sensor_status': window[idx[i], 2],
                 # 'activity':lastACT
             }
             event_list.append(cur_data_dict)
         return event_list
 
-    def _calculate_window_feature(selsuf, window,idx):
+    def _calculate_window_feature(selsuf, window, idx):
         """Calculate feature vector for current window specified by cur_row_id
 
         Args:
@@ -82,12 +82,13 @@ class PAL_Features(FeatureExtraction):
         # Default Window Size to 30
 
         num_enabled_sensors = self.scount
-        event_list = self._conver_window2eventlist(window,idx)
+        event_list = self._conver_window2eventlist(window, idx)
         window_size = min(self.max_windowsize, len(event_list))-1
-        
+
         cur_row_id = window_size
         x = np.zeros(self.fcount, dtype=np.float)
-        if(window_size==0):return x
+        if (window_size == 0):
+            return x
 
         # Execute feature update routine
         for (key, routine) in self.routines.items():
@@ -112,10 +113,10 @@ class PAL_Features(FeatureExtraction):
                                                                         sensor_name=sensor_name)
                 else:
                     x[feature.index] = feature.get_feature_value(data_list=event_list,
-                                              cur_index=cur_row_id,
-                                              window_size=window_size,
-                                              sensor_info=self.sensor_list,
-                                              sensor_name=None)
+                                                                 cur_index=cur_row_id,
+                                                                 window_size=window_size,
+                                                                 sensor_info=self.sensor_list,
+                                                                 sensor_name=None)
         return x
     # endregion
 

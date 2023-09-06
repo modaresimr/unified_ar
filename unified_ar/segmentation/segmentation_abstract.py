@@ -1,6 +1,6 @@
-from general.utils import Data, MyTask
+from unified_ar import Data, MyTask
 import numpy as np
-from general.utils import Buffer
+from unified_ar.general.utils import Buffer
 import logging
 from tqdm.auto import tqdm
 # Define segmentation

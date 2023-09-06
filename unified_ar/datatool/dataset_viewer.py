@@ -154,13 +154,13 @@ def sensor_hitmap(dataset):
 
         tmp['hit time'] = (tmp['hit time'] * 4).round(0) / 4
         # fig = plt.figure(figsize=(20, 10))
-        a = pd.pivot_table(tmp, columns='hit time (%)', index='SID', aggfunc=np.count_nonzero, fill_value=0)
+        a = pd.pivot_table(tmp, columns='hit time', index='SID', aggfunc=np.count_nonzero, fill_value=0)
         # a = a / a.max()
-        a=a/len(tmp_act_evants)
+        a = a/len(tmp_act_evants)
         # plt.imshow(a, cmap='hot', interpolation='nearest')
         ax = subplots[i - 1]
         sns.heatmap(a, cmap=sns.cm.rocket_r, ax=ax, cbar_kws={"shrink": 0.5})
-        ax.set_title(dataset.activities_map[i] +(f'#{len(tmp_act_evants)}'))
+        ax.set_title(dataset.activities_map[i] + (f'#{len(tmp_act_evants)}'))
         # if (i - 1) % 4 == 0:
         #     ax.set_ylabel(ax.get_yticklabels(), rotation=0)
 

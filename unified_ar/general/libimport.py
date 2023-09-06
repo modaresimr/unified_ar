@@ -2,10 +2,10 @@
 # #get_ipython().run_line_magic('load_ext', 'autoreload')
 # #get_ipython().run_line_magic('autoreload', '2')
 # from IPython import get_ipython
-# from general.libinstall import *
+# from unified_ar.general.libinstall import *
 # from tqdm import tqdm
 # from sklearn import svm
-# import sklearn.metrics 
+# import sklearn.metrics
 # from memory_profiler import profile
 # import numpy as np
 # import pandas as pd
@@ -18,8 +18,6 @@
 # import tensorflow as tf
 # import json
 # from intervaltree import IntervalTree
-
-
 
 
 # from textwrap import wrap

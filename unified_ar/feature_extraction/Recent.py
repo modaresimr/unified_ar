@@ -1,4 +1,4 @@
-from feature_extraction.feature_abstract import FeatureExtraction
+from .feature_abstract import FeatureExtraction
 import pandas as pd
 import numpy as np
 

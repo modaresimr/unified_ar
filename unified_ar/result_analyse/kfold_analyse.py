@@ -1,7 +1,7 @@
 import numpy as np
 from IPython.display import display
 from tqdm.auto import tqdm
-import metric.Metrics
+import unified_ar.metric.Metrics
 
 
 def get_metric(metricname):
@@ -39,7 +39,7 @@ def mergeEvals(dataset, evalres, metricname):
     if (evalobj.classical):
         return mergeEvalsClassic(dataset, evalres, evalobj)
 
-    import general.utils as utils
+    import unified_ar.general.utils as utils
     acts = range(1, len(dataset.activities_map))
     items = [(evalres, metricname, act) for act in acts]
     parallelRes = utils.parallelRunner(True, _evaluateAct, items)
@@ -123,9 +123,9 @@ def add2Avg(oldd, newd, count):
 
 
 if __name__ == "__main__":
-    import general.utils as utils
-    import metric.Metrics
-    import result_analyse.kfold_analyse as an
+    import unified_ar.general.utils as utils
+    import unified_ar.metric.Metrics
+    import unified_ar.result_analyse.kfold_analyse as an
 
     files = ['200515_13-42-24-VanKasteren']
     titles = 'a,b,c'

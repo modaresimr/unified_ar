@@ -1,6 +1,6 @@
-from general.utils import MyTask
+from unified_ar import MyTask
 import numpy as np
-from general.sparray import sparray
+from unified_ar.general.sparray import sparray
 import tempfile
 from tqdm.auto import tqdm
 

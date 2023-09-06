@@ -1,5 +1,5 @@
-from general.utils import Data
-from preprocessing.preprocessing_abstract import Preprocessing
+from unified_ar.general.utils import Data
+from .preprocessing_abstract import Preprocessing
 
 
 class SimplePreprocessing(Preprocessing):
@@ -8,22 +8,21 @@ class SimplePreprocessing(Preprocessing):
     def process(self, datasetdscr, dataset):
         removekeys = []
         for sid, info in datasetdscr.sensor_desc.iterrows():
-            
+
             if (info.Nominal | info.OnChange):
                 continue
             if not info.Cumulative:
                 continue
-            
 
-            xs  = dataset.s_events.loc[dataset.s_events.SID == sid]
+            xs = dataset.s_events.loc[dataset.s_events.SID == sid]
 
             # min = xs.value.min()
             # max = xs.value.max()
             last = xs.iloc[0].copy()
             for key, event in xs.iterrows():
-                newval=event['value']-last['value']
-                last=event.copy()
-                event['value']=newval
+                newval = event['value']-last['value']
+                last = event.copy()
+                event['value'] = newval
 
                 # if event['value']<last['value'] or event['value']-last['value']> invalid_changes:
             # acceptable_change_rate=.2
@@ -33,7 +32,7 @@ class SimplePreprocessing(Preprocessing):
             #     if event['value']<last['value'] or event['value']-last['value']> invalid_changes:
             #         removekeys.append(key)
             #     else:
-            #         last = event    
+            #         last = event
             #     # invalid_changes = event['value']*acceptable_change_rate
             #     # if abs(last['value']-) > invalid_changes:
             #     #     #print (event)

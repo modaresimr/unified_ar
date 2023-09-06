@@ -1,6 +1,6 @@
-import general.Cache as Cache
-import general.utils as utils
-from segmentation.segmentation_abstract import Segmentation
+import unified_ar.general.Cache as Cache
+import unified_ar.general.utils as utils
+from .segmentation_abstract import Segmentation
 import pandas as pd
 import logging
 logger = logging.getLogger(__file__)

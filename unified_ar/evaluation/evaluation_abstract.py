@@ -1,4 +1,4 @@
-from general.utils import MyTask
+from unified_ar import MyTask
 
 
 class Evaluation(MyTask):
@@ -6,5 +6,5 @@ class Evaluation(MyTask):
     def precompute(self):
         pass
 
-    def evaluate(self,dataset,func):
+    def evaluate(self, dataset, func):
         pass

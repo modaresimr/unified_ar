@@ -1,4 +1,4 @@
-from segmentation.segmentation_abstract import Segmentation
+from .segmentation_abstract import Segmentation
 import pandas as pd
 
 
@@ -66,7 +66,7 @@ class FixedEventWindow(Segmentation):
         eindex = min(len(buffer.times) - 1, sindex + size)
 
         etime = buffer.times[eindex]
-        if etime-stime>pd.Timedelta('12h'):
+        if etime-stime > pd.Timedelta('12h'):
             filteridx = buffer.searchTime(stime + pd.Timedelta('12h'), +1)
             eindex = min(eindex, filteridx)
         # if (eindex - sindex < size):
@@ -83,4 +83,4 @@ class FixedEventWindow(Segmentation):
             print('size', size)
             print('len', len(buffer.times))
 
-        return (idx,None)
+        return (idx, None)

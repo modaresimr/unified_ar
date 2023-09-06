@@ -1,6 +1,6 @@
-from general.utils import Buffer
-from segmentation.segmentation_abstract import Segmentation
-from general.utils import argmaxdic
+from unified_ar.general.utils import Buffer
+from .segmentation_abstract import Segmentation
+from unified_ar.general.utils import argmaxdic
 
 
 class Probabilistic(Segmentation):

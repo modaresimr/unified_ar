@@ -1,19 +1,20 @@
+from datetime import datetime
 import matplotlib.dates as mdates
 import matplotlib.patches as patches
 import numpy as np
 import pandas as pd
 import sklearn.metrics
 from matplotlib.pylab import plt
-from wardmetrics.core_methods import eval_events, eval_segments
-from wardmetrics.utils import *
-from wardmetrics.visualisations import *
+from ..wardmetrics.core_methods import eval_events, eval_segments
+from ..wardmetrics.utils import *
+from ..wardmetrics.visualisations import *
 from IPython.display import display
-import metric.MyMetric as MyMetric
-import result_analyse.dataset_viewer as dv
-import result_analyse.SpiderChart as spiderchart
-from metric.CMbasedMetric import CMbasedMetric
-from metric.EventBasedMetric import time2int
-import general.utils
+import unified_ar.metric.MyMetric as MyMetric
+import unified_ar.result_analyse.dataset_viewer as dv
+import unified_ar.result_analyse.SpiderChart as spiderchart
+from unified_ar.metric.CMbasedMetric import CMbasedMetric
+from unified_ar.metric.EventBasedMetric import time2int
+import unified_ar.general.utils
 
 
 def filterTime(events, duration=None):
@@ -152,10 +153,10 @@ def remove_gaps(real_events, pred_events, onlyAct=None, max_events=20):
     if not (onlyAct is None):
         real_events = real_events.loc[real_events.Activity == onlyAct]
         pred_events = pred_events.loc[pred_events.Activity == onlyAct]
-    #print(str(onlyAct),'===>r:',len(real_events),' p:',len(pred_events))
+    # print(str(onlyAct),'===>r:',len(real_events),' p:',len(pred_events))
     real_events = real_events.head(2 * max_events).tail(max_events)
     pred_events = pred_events.loc[pred_events.EndTime < real_events.EndTime.iloc[-1]].loc[pred_events.EndTime >= real_events.StartTime.iloc[0]]
-    #print(str(onlyAct),'after===>r:',len(real_events),' p:',len(pred_events))
+    # print(str(onlyAct),'after===>r:',len(real_events),' p:',len(pred_events))
     allItems = []
 
     defGap = real_events.Duration.sum() / len(real_events.Duration)
@@ -263,7 +264,7 @@ def plotMyMetric(allmetrics, acts, actmap={}):
     acount = len(acts)
     col = min(4, acount)
     row = int(np.ceil((acount) / float(col)))
-    import result_analyse.SpiderChart
+    import unified_ar.result_analyse.SpiderChart
     # result_analyse.SpiderChart.radar_factory(5, frame='polygon')
     m_fig, m_ax = plt.subplots(row, col, figsize=(col * 3, row * 3), subplot_kw=dict(projection='radar'))
     if type(m_ax) != np.ndarray:
@@ -291,7 +292,7 @@ def plotJoinMetric(joinmetrics, acts, actmap={}):
     acount = len(acts)
     col = min(4, acount)
     row = int(np.ceil((acount) / float(col)))
-    import result_analyse.SpiderChart
+    import unified_ar.result_analyse.SpiderChart
     result_analyse.SpiderChart.radar_factory(5, frame='polygon')
     m_fig, m_ax = plt.subplots(row, col, figsize=(col * 3, row * 3), subplot_kw=dict(projection='radar'))
     if type(m_ax) != np.ndarray:
@@ -323,8 +324,8 @@ def plotJoinMetric(joinmetrics, acts, actmap={}):
                 # else:
                 for c in df.columns.get_level_values(1).unique():
                     df = df.rename({c: f'{c}, avg={df.loc["f1"][name][c].mean().round(2)}'}, axis=1, level=1)
-                keys=['tp','fp','fn','tn','precision','recall','f1']
-                
+                keys = ['tp', 'fp', 'fn', 'tn', 'precision', 'recall', 'f1']
+
                 display(df.loc[[k for k in keys if k in df.index]])
 
             # # # # # #} VISUALISATION
@@ -354,7 +355,7 @@ def plotJoinMetric(joinmetrics, acts, actmap={}):
                 all.loc[item] = df.loc['f1']
 
             if not (all is None):
-                #print(f'all={all} title={name}, ax={m_ax[i]}')
+                # print(f'all={all} title={name}, ax={m_ax[i]}')
 
                 spiderchart.plot(all, [0.25, .5, .75], title=name, ax=m_ax[i])
 
@@ -373,7 +374,7 @@ def visualize(dataset):
     dv.plotAct(dataset, dataset.activity_events)
 
 
-# from general.utils import loadState
+# from unified_ar.general.utils import loadState
 # dataset,real_events,pred_events=loadState('r1')
 # my_result_analyse(dataset,real_events,pred_events)
 
@@ -817,7 +818,7 @@ def plot_per_act(dataset, myevalres):
 
 def plot_per_act_cm(dataset, cm, event_cm):
     # myevalres=sorted(myevalres)
-    import general.utils as utils
+    import unified_ar.general.utils as utils
     data = utils.Data('tmp')
     data.event_cm = event_cm
     data.cm = cm
@@ -829,7 +830,7 @@ def plot_per_act_cm(dataset, cm, event_cm):
 
 def convert2event(real):
     newreal = []
-    mind = pd.datetime(2011, 1, 1)
+    mind = datetime(2011, 1, 1)
     for item in real:
         s = mind + pd.to_timedelta(str(item[0]) + 'm')
         e = mind + pd.to_timedelta(str(item[1]) + 'm')
@@ -839,8 +840,8 @@ def convert2event(real):
 
 
 if __name__ == '__main__':
-    import result_analyse.resultloader
-    import general.utils as utils
+    import unified_ar.result_analyse.resultloader
+    import unified_ar.general.utils as utils
     # run_info,dataset,evalres=utils.loadState(result_analyse.resultloader.get_runs()[0][0])
     run_info, dataset, evalres = utils.loadState('ward-a')
 

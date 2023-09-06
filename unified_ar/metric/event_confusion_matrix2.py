@@ -2,7 +2,7 @@
 import numpy as np
 import pandas as pd
 from intervaltree.intervaltree import IntervalTree
-from general.utils import Data
+from unified_ar.general.utils import Data
 
 
 def event_confusion_matrix2(r_activities, p_activities, labels):
@@ -22,7 +22,7 @@ def event_confusion_matrix2(r_activities, p_activities, labels):
     return cm
 
 
-def merge_split_overlap_IntervalTree(r_acts,p_acts):
+def merge_split_overlap_IntervalTree(r_acts, p_acts):
     tree = IntervalTree()
 
     for act in p_acts:

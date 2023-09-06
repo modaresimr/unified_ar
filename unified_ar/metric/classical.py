@@ -1,4 +1,4 @@
-from metric.metric_abstract import AbstractClassifierMetric
+from .metric_abstract import AbstractClassifierMetric
 import numpy as np
 # class MyEvaluator(AbstractEvaluation):
 #     def evaluate_dataset(self,dataset,plabel,pprob):

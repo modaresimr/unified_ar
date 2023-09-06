@@ -1,11 +1,12 @@
-from general.utils import MyTask
+from unified_ar import MyTask
 import numpy as np
+
 
 class Classifier(MyTask):
     def createmodel(self, inputsize, outputsize, update_model=False):
-        tmpsample=np.array([np.zeros(inputsize)])
-        newshape=self._reshape(tmpsample).shape[1:]
-        return self._createmodel(newshape, outputsize,update_model=update_model)
+        tmpsample = np.array([np.zeros(inputsize)])
+        newshape = self._reshape(tmpsample).shape[1:]
+        return self._createmodel(newshape, outputsize, update_model=update_model)
 
     def train(self, trainset, trainlabel):
         return self._train(self._reshape(trainset), trainlabel)
@@ -19,18 +20,18 @@ class Classifier(MyTask):
     def predict_classes(self, testset):
         return self._predict_classes(self._reshape(testset))
 
-    def setWeight(self,weight):
-        self.weight=weight
-        
+    def setWeight(self, weight):
+        self.weight = weight
+
     def _reshape(self, data):
-        if(len(data.shape) == 2):
+        if (len(data.shape) == 2):
             return data
 
-        if(len(data.shape) == 1):
+        if (len(data.shape) == 1):
             raise np.reshape(data, (data.shape[0], 1))
 
         return np.reshape(data, (data.shape[0], data.shape[1]*data.shape[2]))
-    
+
     def _createmodel(self, inputsize, outputsize, update_model=False):
         raise NotImplementedError
 

@@ -1,4 +1,4 @@
-from segmentation.segmentation_abstract import Segmentation
+from .segmentation_abstract import Segmentation
 import pandas as pd
 
 

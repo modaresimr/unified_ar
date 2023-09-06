@@ -1,18 +1,18 @@
 import pandas as pd
 
-from evaluation.evaluation_abstract import Evaluation
-from general.utils import Data
-from general.utils import saveState
-from general.utils import saveFunctions
+from .evaluation_abstract import Evaluation
+from unified_ar.general.utils import Data
+from unified_ar.general.utils import saveState
+from unified_ar.general.utils import saveFunctions
 
 
 class SplitEval(Evaluation):
 
     def evaluate(self, dataset, strategy):
-        self.dataset=dataset
+        self.dataset = dataset
         from constants import methods
-        methods.run_names['fold']=0
-        
+        methods.run_names['fold'] = 0
+
         Train, Test = self.makeTrainTest(dataset.sensor_events, dataset.activity_events)
         acts = [a for a in dataset.activities_map]
         trainres = strategy.train(dataset, Train, acts)
@@ -25,10 +25,10 @@ class SplitEval(Evaluation):
 
         test_start = min(activity_events.StartTime)
         test_end = test_start+((max(activity_events.EndTime)-min(activity_events.StartTime))*3/10)
-        if(self.dataset.data_dscr=='Home2'): # for using HHMM data
-            test_start = pd.to_datetime('1253551880',unit='s')
+        if (self.dataset.data_dscr == 'Home2'):  # for using HHMM data
+            test_start = pd.to_datetime('1253551880', unit='s')
             test_end = pd.to_datetime('1256157814', unit='s')
-        elif(self.dataset.data_dscr == 'Home1'): # for using HHMM data
+        elif (self.dataset.data_dscr == 'Home1'):  # for using HHMM data
             # test_start = pd.to_datetime('1247845945', unit='s')
             test_end = pd.to_datetime('1249337628', unit='s')
         # dataset_split = pd.to_datetime(dataset_split.date())  # day
