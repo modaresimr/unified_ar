@@ -1,0 +1,11 @@
+
+
+
+def fusion(segments,acts):
+    first=segments[next(seg)]
+    f=np.zeros(len(segments),len(acts)*)
+
+    for iseg in range(len(segments)):
+        seg=segments[iseg]
+        f
+
