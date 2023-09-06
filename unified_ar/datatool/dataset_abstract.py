@@ -1,7 +1,6 @@
 import compress_pickle
 import os
-from general.utils import MyTask
-import general.utils as utils
+from .. import MyTask,utils
 import numpy as np
 from intervaltree.intervaltree import IntervalTree
 
@@ -15,6 +14,7 @@ class Dataset(MyTask):
         self.data_path = data_path
         self.data_dscr = data_dscr
         self.cache_path = f'{data_path}/cache.pkl.lz4'
+        self.load()
 
     def shortname(self):
         return self.data_dscr

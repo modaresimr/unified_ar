@@ -1,26 +1,24 @@
-from datatool.dataset_abstract import Dataset
+from .dataset_abstract import Dataset
 import os
 import wget
 import pandas as pd
 from intervaltree.intervaltree import IntervalTree
 import json
-from general.utils import Data
+from .. import Data, utils
 import numpy as np
 
 
 class CASAS(Dataset):
-    def __init__(self, data_path, data_dscr):
-        super().__init__(data_path, data_dscr)
+    def __init__(self, datadir, title, **kwargs):
+        super().__init__(datadir, title)
 
     def _load(self):
         rootfolder = self.data_path
         # rootfolder='datasetfiles/CASAS/'+name+'/'
         datafile = rootfolder+"/data.txt"
 
-        all = pd.read_csv(datafile, sep=r"\s+", header=None,
-                          names=["date", "time", "SID", "value", "activity", "hint"])
-        all.time = pd.to_datetime(all.date+" " + all.time,
-                                  format='%Y-%m-%d %H:%M:%S')
+        all = pd.read_csv(datafile, sep=r"\s+", header=None, names=["date", "time", "SID", "value", "activity", "hint"])
+        all.time = pd.to_datetime(all.date+" " + all.time, format='%Y-%m-%d %H:%M:%S.%f', errors='coerce')
         all = all.drop(columns=['date'])
 
         sensor_events = all
@@ -79,12 +77,12 @@ class CASAS(Dataset):
             except:
                 print(s)
                 from IPython.display import display
-                display(sensor_events.loc[sensor_events['SID']==s])
+                display(sensor_events.loc[sensor_events['SID'] == s])
                 raise
 
             sensor_desc.append(item)
 
         sensor_desc = pd.DataFrame(sensor_desc)
-        #sensor_desc.ItemRange=sensor_desc.ItemRange.apply(lambda x: json.loads(x))
+        # sensor_desc.ItemRange=sensor_desc.ItemRange.apply(lambda x: json.loads(x))
 
         return activity_events, activities, sensor_events, sensor_desc

@@ -1,4 +1,4 @@
-from general.utils import Data
+from .. import Data
 import pandas as pd
 def load():
 

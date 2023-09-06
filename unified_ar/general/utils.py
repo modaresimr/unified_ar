@@ -1,6 +1,5 @@
 import multiprocessing
 from tqdm.notebook import tqdm
-import general.utils
 
 import pandas as pd
 import auto_profiler
@@ -8,19 +7,11 @@ import os
 from os.path import exists
 import logging
 from intervaltree import intervaltree
-
+from .. import Data
 logger = logging.getLogger(__file__)
 
 # Define a Data Object
 
-
-class Data:
-
-    def __init__(self, name):
-        self.name = name
-
-    def __str__(self):
-        return '<' + self.name + '> ' + str(self.__dict__)
 
 
 # Arg Max in a Dic
@@ -32,50 +23,6 @@ def argmaxdic(dic):
             mx['v'] = tmp
             mx['i'] = d
     return mx['i']
-
-
-class MyTask:
-    params = {}
-
-    def applyDefParams(self, paramlists):
-        from collections import ChainMap
-        newparams = []
-        for p in paramlists:
-            if 'var' in p:
-                newparams.append({p['var']: p['init']})
-            else:
-                for k in p:
-                    newparams.append({k: p[k]})
-                    break
-
-        return self.applyParams(dict(ChainMap(*newparams)))
-
-    def applyParams(self, params):
-        self.params = params
-        for p in params:
-            self.__dict__[p] = params[p]
-        return True
-
-    def reset(self):
-        pass
-
-    def __str__(self):
-        return '<' + self.__class__.__name__ + '> ' + str(self.__dict__)
-
-    def __repr__(self):
-        return self.__str__()
-
-    def shortname(self):
-        return self.__class__.__name__
-
-    def save(self, file):
-        import pickle
-        file = file + '.pkl'
-        with open(file, 'wb') as f:
-            pickle.dump([self], f)
-
-    def load(self, file):
-        pass
 
 
 # Defining Interval Tree from Activities.
@@ -336,7 +283,7 @@ def convertSED(name, dataset, pe):
     pred.load()
 
     ########
-    evalres = {0: {'test': general.utils.Data('SED')}}
+    evalres = {0: {'test': Data('SED')}}
 
     evalres[0]['test'].real_events = dataset.activity_events
     evalres[0]['test'].Sdata = None
@@ -348,13 +295,13 @@ def convertSED(name, dataset, pe):
     evalres[0]['test'].pred_events = pred.activity_events
 
     #######
-    general.utils.saveState([run_info, dataset, {0: evalres[0]}], name)
+    saveState([run_info, dataset, {0: evalres[0]}], name)
     return pred
 
 
 def convert2SED(filename):
     import numpy as np
-    [run_info, dataset, evalres] = general.utils.loadState(filename)
+    [run_info, dataset, evalres] = loadState(filename)
     real = []
     pred = []
 

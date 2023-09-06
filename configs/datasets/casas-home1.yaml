@@ -1,4 +1,4 @@
 dataset:
   title: "Home1"
-  class: 'unified_pipeline.dataset.CASAS'
+  class: 'unified_ar.datatool.CASAS'
   datadir: "datasets/casas/home1"

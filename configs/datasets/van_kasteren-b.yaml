@@ -1,4 +1,4 @@
 dataset:
   title: "Van_Kasteren B"
-  class: 'unified_pipeline.dataset.CASAS'
+  class: 'unified_ar.datatool.CASAS'
   datadir: "datasets/van_kasteren/B"

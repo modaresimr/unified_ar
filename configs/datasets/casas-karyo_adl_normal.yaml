@@ -1,4 +1,4 @@
 dataset:
   title: "Karyo ADL Normal"
-  class: 'unified_pipeline.dataset.CASAS'
+  class: 'unified_ar.datatool.CASAS'
   datadir: "datasets/casas/karyo_adl_normal"

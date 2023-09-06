@@ -1,17 +1,17 @@
-from datatool.dataset_abstract import Dataset
+from .dataset_abstract import Dataset
 import os
 import wget
 import pandas as pd
 from intervaltree.intervaltree import IntervalTree
 import json
-from general.utils import Data
+from .. import Data,utils
 import numpy as np
 
 
 class SED(Dataset):
-    def __init__(self, path,descr,srcDataset):
-        super().__init__(path, descr)
-        self.srcDataset=srcDataset;
+    def __init__(self, datadir, title, srcDataset, **kwargs):
+        super().__init__(datadir, title)
+        self.srcDataset = srcDataset
 
     def _load(self):
         # rootfolder='datasetfiles/CASAS/'+name+'/'

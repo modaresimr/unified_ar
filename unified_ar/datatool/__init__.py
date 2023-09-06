@@ -10,3 +10,6 @@ __import__('pkg_resources').declare_namespace(__name__)
 # for pack in __all__:
 #     globals().update(importlib.import_module(basename(dirname(__file__))+'.'+pack).__dict__)
 
+from .a4h_handeler import A4H
+from .casas_handeler import CASAS
+from .seddata import SED

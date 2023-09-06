@@ -1,15 +1,16 @@
-from datatool.dataset_abstract import Dataset
+from .dataset_abstract import Dataset
 import os
 import wget
 import pandas as pd
 from intervaltree.intervaltree import IntervalTree
 import json
-from general.utils import Data
+from .. import Data
 
 
 class VanKasteren(Dataset):
-    def __init__(self,data_path,data_dscr):
-        super().__init__(data_path,data_dscr);
+    def __init__(self, datadir, title, **kwargs):
+        super().__init__(datadir, title)
+
         
     def _load(self):
         rootfolder = self.data_path

@@ -14,3 +14,6 @@ auto_profiler
 #tensorflow_addons
 # libsvm
 
+termcolor
+jupyter_ui_poll
+tqdm
