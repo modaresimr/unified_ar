@@ -1,0 +1,4 @@
+dataset:
+  title: "Home2"
+  class: 'unified_pipeline.dataset.A4H'
+  datadir: "datasets/orange4home"

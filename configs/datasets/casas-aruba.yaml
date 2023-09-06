@@ -1,0 +1,4 @@
+dataset:
+  title: "Aruba"
+  class: 'unified_pipeline.dataset.CASAS'
+  datadir: "datasets/casas/aruba"
