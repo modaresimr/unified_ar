@@ -15,10 +15,10 @@ def runPipelineUI():
     def res(**args):
         largs = []
         for a in args:
-            largs.append('--'+a)
+            largs.append('--' + a)
             largs.append(str(args[a]))
         print(largs)
-        import main
+        from unified_ar import main
         main.Main(largs)
 
     params = {}
@@ -31,7 +31,7 @@ def runPipelineUI():
             continue
         if par == 'meta_segmentation_sub_tasks':
             continue
-        params[par] = {v['method']().shortname()+' '+(str(v['params']) if 'params' in v and len(v['params']) > 0 else ''): k for k, v in enumerate(args)}
+        params[par] = {v['method']().shortname() + ' ' + (str(v['params']) if 'params' in v and len(v['params']) > 0 else ''): k for k, v in enumerate(args)}
         if not (par == 'mlstrategy' or par == 'evaluation' or par == 'dataset'):
             params[par]['All -> Find Best'] = -1
 
@@ -69,7 +69,7 @@ def loadGemMetricUI():
             @interact_manual
             def view(start_date=widgets.DatePicker(value=pd.to_datetime(stime)), end_date=widgets.DatePicker(value=pd.to_datetime(etime)), debug=widgets.Checkbox(value=False)):
                 duration = (pd.to_datetime(start_date), pd.to_datetime(end_date))
-                duration2 = (pd.to_datetime(start_date), pd.to_datetime(start_date)+pd.DateOffset(days=7))
+                duration2 = (pd.to_datetime(start_date), pd.to_datetime(start_date) + pd.DateOffset(days=7))
                 real_events = vs.filterTime(evalres[fold]['test'].real_events, duration)
                 pred_events = vs.filterTime(evalres[fold]['test'].pred_events, duration)
                 # vs.plotJoinAct(dataset,real_events,pred_events)
@@ -85,29 +85,29 @@ def loadGemMetricUI():
                 import unified_ar.result_analyse.SpiderChart
                 result_analyse.SpiderChart.radar_factory(5, frame='polygon')
                 acount = len(dataset.activities_map)
-                a_fig, a_ax = plt.subplots(acount-1, 1, figsize=(10, acount*.25),)
+                a_fig, a_ax = plt.subplots(acount - 1, 1, figsize=(10, acount * .25),)
     #             a_fig.tight_layout(pad=3.0)
                 col = 4
-                row = int(np.ceil((acount-1.0)/float(col)))
-                m_fig, m_ax = plt.subplots(row, col, figsize=(col*3, row*3), subplot_kw=dict(projection='radar'))
+                row = int(np.ceil((acount - 1.0) / float(col)))
+                m_fig, m_ax = plt.subplots(row, col, figsize=(col * 3, row * 3), subplot_kw=dict(projection='radar'))
                 if type(a_ax) != np.ndarray:
                     print('dddd', a_ax)
                     print(type(a_ax))
                     a_ax = np.array([a_ax])
                 else:
                     m_ax = m_ax.flatten()
-                for i in range(acount-1, len(m_ax)):
+                for i in range(acount - 1, len(m_ax)):
                     m_ax[i].set_visible(False)
 
                 for i in range(1, len(dataset.activities_map)):
                     #                 real_events2,pred_events2=vs.remove_gaps(real_events,pred_events,i)
                     # real_events2,pred_events2=vs.remove_gaps(real_events,pred_events,i,max_events=10)
                     real_events2, pred_events2 = real_events, pred_events
-                    vs.plotJoinAct(dataset, real_events, pred_events, onlyAct=i, ax=a_ax[i-1])
+                    vs.plotJoinAct(dataset, real_events, pred_events, onlyAct=i, ax=a_ax[i - 1])
                     try:
                         #                     vs.plotJoinAct(dataset,real_events2,pred_events2,onlyAct=i,ax=a_ax[i-1])
 
-                        vs.plotMyMetric2(dataset, real_events2, pred_events2, onlyAct=i, ax=m_ax[i-1], debug=debug, calcne=0)
+                        vs.plotMyMetric2(dataset, real_events2, pred_events2, onlyAct=i, ax=m_ax[i - 1], debug=debug, calcne=0)
 
                     except Exception as e:
                         import sys
@@ -165,7 +165,7 @@ def loadWardMetricUI():
             @interact_manual
             def view(start_date=widgets.DatePicker(value=pd.to_datetime(stime)), end_date=widgets.DatePicker(value=pd.to_datetime(etime)), debug=widgets.Checkbox(value=False)):
                 duration = (pd.to_datetime(start_date), pd.to_datetime(end_date))
-                duration2 = (pd.to_datetime(start_date), pd.to_datetime(start_date)+pd.DateOffset(days=7))
+                duration2 = (pd.to_datetime(start_date), pd.to_datetime(start_date) + pd.DateOffset(days=7))
                 real_events = vs.filterTime(evalres[fold]['test'].real_events, duration)
                 pred_events = vs.filterTime(evalres[fold]['test'].pred_events, duration)
                 # vs.plotJoinAct(dataset,real_events,pred_events)
@@ -237,7 +237,7 @@ def loadGemMultiUI():
     @interact
     def datasets(dataset=['Aruba', 'Home1', 'Home2', 'A4H', 'ward', 'VanKasteren']):
         @interact_manual
-        def compare(files=widgets.SelectMultiple(options=result_analyse.resultloader.get_runs_summary(dataset), description='Files',           layout=Layout(width='100%', height='180px')), metric=metrics, titles="title1,title2"):
+        def compare(files=widgets.SelectMultiple(options=result_analyse.resultloader.get_runs_summary(dataset), description='Files', layout=Layout(width='100%', height='180px')), metric=metrics, titles="title1,title2"):
             if len(files) == 0:
                 return print('no file is selected')
             utils.reload()

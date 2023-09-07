@@ -1,0 +1,4 @@
+segmentation:
+  title: "UAR_DecisionTree"
+  class: 'unified_ar.classifier.MySKLearn.UAR_DecisionTree'
+  params:

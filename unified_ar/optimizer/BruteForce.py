@@ -9,7 +9,7 @@ logger = logging.getLogger(__file__)
 
 def method_param_selector(callback, uniquekey):
     import itertools
-    from constants import methods
+    from unified_ar.constants import methods
     s = [methods.preprocessing, methods.segmentation,
          methods.activity_fetcher, methods.feature_extraction, methods.classifier]
     permut = list(itertools.product(*s))
@@ -33,7 +33,7 @@ def method_param_selector(callback, uniquekey):
             obj = func.__dict__[k]
             if isinstance(obj, MyTask):
                 obj.func = func
-                func.shortrunname += obj.shortname()+'_'
+                func.shortrunname += obj.shortname() + '_'
 
         optl = OptLearn(func, callback)
         allpool.append(optl)

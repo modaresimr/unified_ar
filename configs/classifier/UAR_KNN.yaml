@@ -1,0 +1,5 @@
+segmentation:
+  title: "UAR_KNN"
+  class: 'unified_ar.classifier.MySKLearn.UAR_KNN'
+  params:
+    k: 5

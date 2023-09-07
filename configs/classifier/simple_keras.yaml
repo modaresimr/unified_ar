@@ -1,0 +1,6 @@
+segmentation:
+  title: "SimpleKeras"
+  class: 'unified_ar.classifier.Keras.SimpleKeras'
+  params:
+    epochs: 10
+

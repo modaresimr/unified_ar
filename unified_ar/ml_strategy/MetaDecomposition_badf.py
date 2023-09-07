@@ -31,16 +31,16 @@ class SimpleMeta(MLStrategy):
         self.traindata = self.justifySet(self.acts, data)
 
         import copy
-        from constants import methods
+        from unified_ar.constants import methods
 
         import unified_ar.general.Cache as Cache
         Cache.GlobalDisable = True
 
         ssize = pd.to_timedelta('1d')
-        overlap = ssize*1.0
+        overlap = ssize * 1.0
 
         starts = data.s_events.time.dt.floor(overlap).unique()
-        ends = starts+ssize
+        ends = starts + ssize
         meta_features = []
         meta_targets = []
         fast_strategy = ml_strategy.Simple.NormalStrategy()

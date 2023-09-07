@@ -1,0 +1,5 @@
+segmentation:
+  title: "CNN_LSTM"
+  class: 'unified_ar.classifier.CNN_LSTM.CNN_LSTM'
+  params:
+    epochs: 10

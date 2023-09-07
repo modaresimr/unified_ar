@@ -1,0 +1,7 @@
+segmentation:
+  title: "SlidingEventActivityWindow"
+  class: 'unified_ar.segmentation.ActivityWindow.SlidingEventActivityWindow'
+  params:
+    shift: 1
+    size: 25
+

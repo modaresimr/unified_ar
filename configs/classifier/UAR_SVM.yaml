@@ -1,0 +1,8 @@
+segmentation:
+  title: "UAR_SVM"
+  class: 'unified_ar.classifier.MySKLearn.UAR_SVM'
+  params:
+    kernel: 'rbf'
+    gamma: 1
+    C: 100.
+    decision_function_shape: 'ovr'

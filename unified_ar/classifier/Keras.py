@@ -75,7 +75,7 @@ d            tuple(Tensor): (micro, macro, weighted)
     def _createmodel(self, inputsize, outputsize, update_model=False):
         if update_model and hasattr(self, 'model'):
             self.tqdmcallback = TqdmCallback(verbose=1)
-            from constants import methods
+            from unified_ar.constants import methods
             meta_path = methods.run_names.get('meta_base', '')
             if meta_path:
                 logger.debug(f'loading meta train model {meta_path}')
@@ -130,7 +130,7 @@ d            tuple(Tensor): (micro, macro, weighted)
         for i in range(self.outputsize):
             if not (i in cw):
                 cw[i] = 0
-        from constants import methods
+        from unified_ar.constants import methods
 
         trainlabel = tf.keras.utils.to_categorical(trainlabel, num_classes=self.outputsize)
         # from tf.keras.callbacks import EarlyStopping
@@ -138,7 +138,7 @@ d            tuple(Tensor): (micro, macro, weighted)
         tf.keras.backend.set_value(self.model.optimizer.lr, .01)
         es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=50, restore_best_weights=True)
 
-        logpath = logging.getLogger().handlers[0].baseFilename[:-3]+f'/{methods.run_names["out"]}.csv'
+        logpath = logging.getLogger().handlers[0].baseFilename[:-3] + f'/{methods.run_names["out"]}.csv'
 
         from pathlib import Path
         Path(logpath).parent.mkdir(parents=True, exist_ok=True)
@@ -288,7 +288,7 @@ class FCNEmbedded(SequenceNN):
 
         input_layer = Input(shape=((n_timesteps,)))
 
-        embedding = Embedding(input_dim=vocab_size+1, output_dim=64, input_length=n_timesteps, mask_zero=True)(input_layer)
+        embedding = Embedding(input_dim=vocab_size + 1, output_dim=64, input_length=n_timesteps, mask_zero=True)(input_layer)
 
         conv1 = Conv1D(filters=128, kernel_size=8, padding='same')(embedding)
         conv1 = BatchNormalization()(conv1)

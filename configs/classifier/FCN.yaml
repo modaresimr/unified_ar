@@ -1,0 +1,6 @@
+segmentation:
+  title: "FCN"
+  class: 'unified_ar.classifier.Keras.FCN'
+  params:
+    epochs: 400
+

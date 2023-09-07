@@ -1,4 +1,5 @@
 dataset:
   title: "Aruba"
   class: 'unified_ar.datatool.CASAS'
-  datadir: "datasets/casas/aruba"
+  params:
+    datadir: "datasets/casas/aruba"

@@ -1,0 +1,15 @@
+segmentation:
+  title: "FEW"
+  class: 'unified_ar.segmentation.FixedTimeWindow.FixedTimeWindow'
+  params: #in seconds
+    shift: 10
+    size: 30
+  range:
+    shift:
+      min: 1
+      max: 600
+      #list: 15,30,45
+    size:
+      min: 1
+      max: 600    
+      # list: 15,30,45,60,75

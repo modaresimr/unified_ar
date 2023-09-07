@@ -1,0 +1,5 @@
+segmentation:
+  title: "PAL_LSTM"
+  class: 'unified_ar.classifier.PyActLearn.PAL_LSTM_Legacy'
+  params:
+    epochs: 10

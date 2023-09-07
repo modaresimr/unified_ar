@@ -11,7 +11,7 @@ class SWMeta(Segmentation):
         if not super().applyParams(params):
             return False
         self.meta_size = pd.to_timedelta(params['meta_size'])
-        self.meta_step_period = self.meta_size*params['meta_overlap_rate']
+        self.meta_step_period = self.meta_size * params['meta_overlap_rate']
         self.meta_mode = params['meta_mode']
         return True
 
@@ -27,7 +27,7 @@ class SWMeta(Segmentation):
         Cache.GlobalDisable = True
         meta_features = []
         meta_targets = []
-        from constants import methods
+        from unified_ar.constants import methods
         def_segments = methods.segmentation
         self.segmentor_dic = {p['method']().shortname(): p for p in methods.meta_segmentation_sub_tasks}
         import ml_strategy.Simple
@@ -63,7 +63,7 @@ class SWMeta(Segmentation):
         methods.segmentation = methods.meta_segmentation_sub_tasks
 
         starts = s_events.time.dt.floor(self.meta_step_period).unique()
-        ends = starts+self.meta_size
+        ends = starts + self.meta_size
 
         for s, e in zip(starts, ends):
             methods.run_names['out'] = f"{def_run_names['out']}/{s}-{e}"
@@ -120,7 +120,7 @@ class SWMeta(Segmentation):
 
             mdl = keras.Model(inputs=inputs, outputs=[classifier, *regressions])
 
-            mdl.compile(loss=['categorical_crossentropy', *(['mse']*len(regressions))], optimizer='adam', metrics=['accuracy'])
+            mdl.compile(loss=['categorical_crossentropy', *(['mse'] * len(regressions))], optimizer='adam', metrics=['accuracy'])
         else:
             from sklearn.svm import SVR
             from sklearn.multioutput import MultiOutputRegressor
@@ -178,7 +178,7 @@ class SWMeta(Segmentation):
     def prepare_meta_analysis(self, buffer):
         s_events = buffer.data
         starts = s_events.time.dt.floor(self.meta_step_period).unique()
-        ends = starts+self.meta_size
+        ends = starts + self.meta_size
 
         meta_features = []
         ranges = []
@@ -210,7 +210,7 @@ class SWMeta(Segmentation):
             lastStart = buffer.data.iloc[0]['time']
         else:
             #   print(w_history)
-            lastStart = buffer.times[w_history[len(w_history)-1][0]]
+            lastStart = buffer.times[w_history[len(w_history) - 1][0]]
 
         while 1:
             prd = self.meta_predict.iloc[self.last_meta_index]
@@ -282,7 +282,7 @@ class MyTargetTransformer:
             y2[:, 1:] = self.trans['other'].inverse_transform(y2[:, 1:])
             df = pd.DataFrame(y2)
             df.columns = self.columns
-            df['method'] = self.trans['method'].inverse_transform(y2[:, 0].astype(int)*0)
+            df['method'] = self.trans['method'].inverse_transform(y2[:, 0].astype(int) * 0)
             # df['method']='s'
             return df
         else:

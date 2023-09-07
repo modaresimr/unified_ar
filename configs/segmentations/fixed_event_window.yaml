@@ -1,0 +1,6 @@
+segmentation:
+  title: "FEW"
+  class: 'unified_ar.segmentation.FixedEventWindow.FixedEventWindow'
+  params:
+    shift: 1
+    size: 25

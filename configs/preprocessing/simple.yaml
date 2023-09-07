@@ -1,0 +1,5 @@
+segmentation:
+  title: "SWMeta"
+  class: 'unified_ar.preprocessing.SimplePreprocessing.SimplePreprocessing'
+  params:
+  

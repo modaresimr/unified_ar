@@ -20,8 +20,8 @@ methods.meta_segmentation_sub_tasks = [
         {'var': 'shift', 'min': 2, 'max': 20, 'type': 'int', 'init': 2, 'range': [2, 5, 8, 11, 15, 20]}
     ], 'findopt': True},
     {'method': lambda: ar.segmentation.FixedSlidingWindow.FixedSlidingWindow(), 'params': [
-        {'var': 'size', 'min': 60, 'max': 15*60, 'type': 'float', 'init': 120/4, 'range': list(range(15, 120, 15))},
-        {'var': 'shift', 'min': 10, 'max': 7*60, 'type': 'float', 'init': 60/2, 'range': list(range(15, 120, 15))}
+        {'var': 'size', 'min': 60, 'max': 15 * 60, 'type': 'float', 'init': 120 / 4, 'range': list(range(15, 120, 15))},
+        {'var': 'shift', 'min': 10, 'max': 7 * 60, 'type': 'float', 'init': 60 / 2, 'range': list(range(15, 120, 15))}
     ], 'findopt': True},
     {'method': lambda: ar.segmentation.Probabilistic.Probabilistic(), 'params': [], 'findopt': False},
     # {'method': lambda:segmentation.FixedTimeWindow.FixedTimeWindow(), 'params':[
@@ -53,8 +53,8 @@ methods.segmentation = [
         {'var': 'shift', 'min': 2, 'max': 20, 'type': 'int', 'init': 10, 'range': list(range(10, 16, 5))}
     ], 'findopt': False},
     {'method': lambda: ar.segmentation.FixedSlidingWindow.FixedSlidingWindow(), 'params': [
-        {'var': 'size', 'min': 60, 'max': 15*60, 'type': 'float', 'init': 120/4, 'range': list(range(15, 76, 15))},
-        {'var': 'shift', 'min': 10, 'max': 7*60, 'type': 'float', 'init': 60/2, 'range': list(range(15, 45, 15))}
+        {'var': 'size', 'min': 60, 'max': 15 * 60, 'type': 'float', 'init': 120 / 4, 'range': list(range(15, 76, 15))},
+        {'var': 'shift', 'min': 10, 'max': 7 * 60, 'type': 'float', 'init': 60 / 2, 'range': list(range(15, 45, 15))}
     ], 'findopt': False},
     {'method': lambda: ar.segmentation.Probabilistic.Probabilistic(), 'params': [], 'findopt': False},
     # {'method': lambda:segmentation.FixedTimeWindow.FixedTimeWindow(), 'params':[
@@ -67,6 +67,9 @@ methods.preprocessing = [
     {'method': lambda: ar.preprocessing.SimplePreprocessing.SimplePreprocessing()},
 ]
 methods.classifier = [
+    {'method': lambda: ar.classifier.CNN_LSTM.CNN_LSTM(), 'params': [
+        {'epochs': 400}
+    ]},
     {'method': lambda: ar.classifier.Keras.FCN(), 'params': [
         {'epochs': 400}
     ]},
@@ -138,12 +141,12 @@ methods.evaluation = [
 
 
 methods.feature_extraction = [
-    {'method': lambda: ar.feature_extraction.NLP.SensorWord(), 'params': [],     'findopt': False},
+    {'method': lambda: ar.feature_extraction.NLP.SensorWord(), 'params': [], 'findopt': False},
     {'method': lambda: ar.feature_extraction.Recent.Recent(), 'params': [{'lastState': False}], 'findopt': False},
     {'method': lambda: ar.feature_extraction.KHistory.KHistory(), 'params': [{'k': 4}, {'method': ar.feature_extraction.Simple.Simple()}], 'findopt': False},
     {'method': lambda: ar.feature_extraction.Simple.Simple(), 'params': [], 'findopt': False},
-    {'method': lambda: ar.feature_extraction.Cook.Cook1(), 'params': [],     'findopt': False},
-    {'method': lambda: ar.feature_extraction.Context.Diff(), 'params': [],     'findopt': False},
+    {'method': lambda: ar.feature_extraction.Cook.Cook1(), 'params': [], 'findopt': False},
+    {'method': lambda: ar.feature_extraction.Context.Diff(), 'params': [], 'findopt': False},
     {'method': lambda: ar.feature_extraction.KHistory.KHistory(), 'params': [{'k': 2}, {'method': ar.feature_extraction.Simple.Simple()}], 'findopt': False},
     {'method': lambda: ar.feature_extraction.KHistory.KHistory(), 'params': [{'k': 3}, {'method': ar.feature_extraction.Simple.Simple()}], 'findopt': False},
 
@@ -162,15 +165,15 @@ methods.feature_extraction = [
 
 
 methods.dataset = [
-    {'method': lambda: ar.datatool.casas_handeler.CASAS('datasetfiles/CASAS/Home1/', 'Home1')},
-    {'method': lambda: ar.datatool.casas_handeler.CASAS('datasetfiles/CASAS/Home2/', 'Home2')},
-    {'method': lambda: ar.datatool.casas_handeler.CASAS('datasetfiles/CASAS/Aruba/', 'Aruba')},
-    {'method': lambda: ar.datatool.casas_handeler.CASAS('datasetfiles/CASAS/KaryoAdlNormal/', 'KaryoAdlNormal')},
-    {'method': lambda: ar.datatool.a4h_handeler.A4H('datasetfiles/A4H/', 'A4H')},
-    {'method': lambda: ar.datatool.vankasteren_handeler.VanKasteren('datasetfiles/VanKasteren/oldformat/', 'VanKasteren')},
-    {'method': lambda: ar.datatool.casas_handeler.CASAS('datasetfiles/VanKasteren/A/', 'Kasteren_A')},
-    {'method': lambda: ar.datatool.casas_handeler.CASAS('datasetfiles/VanKasteren/B/', 'Kasteren_B')},
-    {'method': lambda: ar.datatool.casas_handeler.CASAS('datasetfiles/VanKasteren/C/', 'Kasteren_C')},
+    {'method': lambda: ar.datatool.casas_handeler.CASAS('datasets/casas/home1/', 'Home1')},
+    {'method': lambda: ar.datatool.casas_handeler.CASAS('datasets/casas/home2/', 'Home2')},
+    {'method': lambda: ar.datatool.casas_handeler.CASAS('datasets/casas/aruba/', 'Aruba')},
+    {'method': lambda: ar.datatool.casas_handeler.CASAS('datasets/casas/karyo_adl_normal/', 'KaryoAdlNormal')},
+    {'method': lambda: ar.datatool.a4h_handeler.A4H('datasets/orange4home/', 'A4H')},
+    # {'method': lambda: ar.datatool.vankasteren_handeler.VanKasteren('datasets/VanKasteren/oldformat/', 'VanKasteren')},
+    {'method': lambda: ar.datatool.casas_handeler.CASAS('datasets/van_kasteren/A/', 'Kasteren_A')},
+    {'method': lambda: ar.datatool.casas_handeler.CASAS('datasets/van_kasteren/B/', 'Kasteren_B')},
+    {'method': lambda: ar.datatool.casas_handeler.CASAS('datasets/van_kasteren/C/', 'Kasteren_C')},
 ]
 
 methods.mlstrategy = [

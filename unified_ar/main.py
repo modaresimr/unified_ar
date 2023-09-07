@@ -1,21 +1,20 @@
 import argparse
 from datetime import datetime
 import logging
-
+import unified_ar as ar
 import unified_ar.general.utils as utils
 
 import auto_profiler
 import importlib
-from unified_ar import constants
+
 
 import unified_ar.general.utils
 
 
-@auto_profiler.Profiler(depth=8, on_disable=general.utils.logProfile)
+@auto_profiler.Profiler(depth=8, on_disable=ar.general.utils.logProfile)
 def run(args):
-    importlib.reload(constants)
-    from constants import methods
-
+    importlib.reload(unified_ar)
+    from unified_ar.constants import methods
     logger = logging.getLogger(__file__)
     logger.debug(f'args={args}')
 

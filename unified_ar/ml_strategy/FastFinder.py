@@ -21,7 +21,7 @@ class FastFinder(MLStrategy):
         self.days = days
 
     def shortname(self):
-        return super().shortname()+f' days={self.days}'
+        return super().shortname() + f' days={self.days}'
 
     def train(self, datasetdscr, data, acts, weight=None):
         self.datasetdscr = datasetdscr
@@ -30,7 +30,7 @@ class FastFinder(MLStrategy):
         self.traindata = self.justifySet(self.acts, data)
 
         import copy
-        from constants import methods
+        from unified_ar.constants import methods
 
         import unified_ar.general.Cache as Cache
         Cache.GlobalDisable = True
@@ -54,7 +54,7 @@ class FastFinder(MLStrategy):
         import random
         selecteddays = random.sample(list(days), count)
 
-        Train0 = Data('train_random_days'+str(selecteddays))
+        Train0 = Data('train_random_days' + str(selecteddays))
         Train0.s_events = sensor_events.loc[sdate.isin(selecteddays)]
         Train0.a_events = activity_events.loc[adate.isin(selecteddays)]
         Train0.s_event_list = Train0.s_events.values

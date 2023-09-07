@@ -1,0 +1,6 @@
+segmentation:
+  title: "LSTMAE"
+  class: 'unified_ar.classifier.Keras.LSTMAE'
+  params:
+    epochs: 10
+    

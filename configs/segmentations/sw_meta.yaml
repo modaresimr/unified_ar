@@ -1,0 +1,7 @@
+segmentation:
+  title: "SWMeta"
+  class: 'unified_ar.segmentation.MetaDecomposition.SWMeta'
+  params:
+    meta_size: '24h'
+    meta_overlap_rate': 1
+    meta_mode': 'keras'

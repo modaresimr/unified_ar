@@ -1,0 +1,5 @@
+segmentation:
+  title: "LSTMTest"
+  class: 'unified_ar.classifier.Keras.LSTMTest'
+  params:
+    epochs: 10

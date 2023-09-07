@@ -10,7 +10,7 @@ class SplitEval(Evaluation):
 
     def evaluate(self, dataset, strategy):
         self.dataset = dataset
-        from constants import methods
+        from unified_ar.constants import methods
         methods.run_names['fold'] = 0
 
         Train, Test = self.makeTrainTest(dataset.sensor_events, dataset.activity_events)
@@ -24,7 +24,7 @@ class SplitEval(Evaluation):
         # dataset_split = min(activity_events.StartTime) + pd.Timedelta('1491684s')
 
         test_start = min(activity_events.StartTime)
-        test_end = test_start+((max(activity_events.EndTime)-min(activity_events.StartTime))*3/10)
+        test_end = test_start + ((max(activity_events.EndTime) - min(activity_events.StartTime)) * 3 / 10)
         if (self.dataset.data_dscr == 'Home2'):  # for using HHMM data
             test_start = pd.to_datetime('1253551880', unit='s')
             test_end = pd.to_datetime('1256157814', unit='s')

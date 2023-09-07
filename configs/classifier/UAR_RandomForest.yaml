@@ -1,0 +1,8 @@
+segmentation:
+  title: "UAR_RandomForest"
+  class: 'unified_ar.classifier.MySKLearn.UAR_RandomForest'
+  params:
+    n_estimators: 20
+    random_state: 0
+    max_depth: 12
+    max_features_rate: .5

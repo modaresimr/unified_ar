@@ -2,6 +2,7 @@
 from . import MySKLearn
 from . import libsvm
 from . import Keras
+from . import CNN_LSTM
 __import__('pkg_resources').declare_namespace(__name__)
 
 # from os.path import dirname, basename, isfile, join

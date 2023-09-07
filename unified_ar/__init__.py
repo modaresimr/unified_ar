@@ -19,6 +19,7 @@ from . import SED
 from . import segmentation
 from . import wardmetrics
 from . import test
+from . import evaluation
 
 
 def reload():

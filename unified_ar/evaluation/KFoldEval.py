@@ -25,7 +25,7 @@ class KFoldEval(Evaluation):
             dataset.sensor_events, dataset.activity_events, self.fold)
         models = {}
         for f, d in enumerate(ttmaker):
-            from constants import methods
+            from unified_ar.constants import methods
             methods.run_names['fold'] = f
             models[f] = self.process(dataset, strategy, f, d)
 
@@ -39,11 +39,11 @@ class KFoldEval(Evaluation):
         kf.get_n_splits(days)
 
         for j, (train_index, test_index) in enumerate(kf.split(days)):
-            Train0 = Data('train_fold_'+str(j))
+            Train0 = Data('train_fold_' + str(j))
             Train0.s_events = sensor_events.loc[sdate.isin(days[train_index])]
             Train0.a_events = activity_events.loc[adate.isin(days[train_index])]
             Train0.s_event_list = Train0.s_events.values
-            Test0 = Data('test_fold_'+str(j))
+            Test0 = Data('test_fold_' + str(j))
             Test0.s_events = sensor_events.loc[sdate.isin(days[test_index])]
             Test0.a_events = activity_events.loc[adate.isin(days[test_index])]
             Test0.s_event_list = Test0.s_events.values

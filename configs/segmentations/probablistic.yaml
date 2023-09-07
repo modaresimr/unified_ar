@@ -1,0 +1,4 @@
+segmentation:
+  title: "Prob"
+  class: 'unified_ar.segmentation.Probabilistic.Probabilistic'
+  params:

@@ -1,4 +1,5 @@
 dataset:
   title: "Karyo ADL Normal"
   class: 'unified_ar.datatool.CASAS'
-  datadir: "datasets/casas/karyo_adl_normal"
+  params:
+    datadir: "datasets/casas/karyo_adl_normal"

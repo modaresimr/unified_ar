@@ -1,0 +1,6 @@
+segmentation:
+  title: "SimpleKeras"
+  class: 'unified_ar.classifier.libsvm.LibSVM'
+  params:
+    epochs: 10
+

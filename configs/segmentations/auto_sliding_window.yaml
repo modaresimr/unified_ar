@@ -1,0 +1,15 @@
+segmentation:
+  title: "FEW"
+  class: 'unified_ar.segmentation.FixedEventWindow.FixedEventWindow'
+  params:
+    shift: 30
+    size: 30
+  range:
+    shift:
+      min: 10
+      max: 420
+      list: 15,30,45
+    size:
+      min: 60
+      max: 600    
+      list: 15,30,45,60,75
