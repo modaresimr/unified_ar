@@ -35,7 +35,7 @@ def column_index(df, query_cols):
 
 def merge_split_overlap_IntervalTree(r_acts, p_acts):
     tree = IntervalTree()
-    from result_analyse.visualisation import plotJoinTree
+    from unified_ar.result_analyse.visualisation import plotJoinTree
     if len(p_acts) > 0:
         PACT = column_index(p_acts, 'Activity')
         PSTIME = column_index(p_acts, 'StartTime')

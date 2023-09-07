@@ -86,7 +86,7 @@ class PAL_Features(FeatureExtraction):
         window_size = min(self.max_windowsize, len(event_list))-1
 
         cur_row_id = window_size
-        x = np.zeros(self.fcount, dtype=np.float)
+        x = np.zeros(self.fcount, dtype=np.float32)
         if (window_size == 0):
             return x
 

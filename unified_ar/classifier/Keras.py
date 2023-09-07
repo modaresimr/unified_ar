@@ -138,11 +138,16 @@ d            tuple(Tensor): (micro, macro, weighted)
         tf.keras.backend.set_value(self.model.optimizer.lr, .01)
         es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=50, restore_best_weights=True)
 
-        logpath = logging.getLogger().handlers[0].baseFilename[:-3] + f'/{methods.run_names["out"]}.csv'
-
-        from pathlib import Path
-        Path(logpath).parent.mkdir(parents=True, exist_ok=True)
-        csv_logger = tf.keras.callbacks.CSVLogger(logpath, append=True, separator=';')
+        if len(logging.getLogger().handlers):
+            logpath = logging.getLogger().handlers[0].baseFilename[:-3] + f'/{methods.run_names["out"]}.csv'
+            from pathlib import Path
+            Path(logpath).parent.mkdir(parents=True, exist_ok=True)
+            csv_logger = tf.keras.callbacks.CSVLogger(logpath, append=True, separator=';')
+            callbacks = [self.tqdmcallback, es, csv_logger]
+        else:
+            csv_logger = None
+            logpath = None
+            callbacks = [self.tqdmcallback, es]
 
         self.model.fit(
             trainset,
@@ -151,7 +156,7 @@ d            tuple(Tensor): (micro, macro, weighted)
             epochs=self.epochs,
             validation_split=0.3,
             # class_weight=cw,
-            callbacks=[self.tqdmcallback, es, csv_logger],
+            callbacks=callbacks,
             verbose=0)
         self.trained = True
 
@@ -199,7 +204,7 @@ class SequenceNN(KerasClassifier):
 
     def _reshape(self, data):
         if (len(data.shape) == 2):
-            return np.reshape(data, (data.shape[0], data.shape[1], 1))
+            return np.reshape(data, (1,data.shape[0], data.shape[1]))
         return data
 
 
@@ -212,7 +217,7 @@ class LSTMTest(SequenceNN):
                 # tf.keras.layers.Dense(128, input_shape=inputsize),
                 # tf.keras.layers.Embedding(input_dim=inputsize,output_dim=100),
                 tf.keras.layers.LSTM(128, activation=tf.nn.relu, input_shape=inputsize),
-                #tf.keras.layers.Dense(512, activation=tf.nn.relu),
+                # tf.keras.layers.Dense(512, activation=tf.nn.relu),
                 tf.keras.layers.Dropout(0.2),
                 tf.keras.layers.Dense(outputsize, activation=tf.nn.softmax)
             ],
@@ -228,7 +233,7 @@ class LSTMAE(SequenceNN):
                 tf.keras.layers.LSTM(inputsize, activation=tf.nn.relu, input_shape=inputsize),
                 tf.keras.layers.LSTM(inputsize // 2, activation=tf.nn.relu),
                 tf.keras.layers.LSTM(inputsize, activation=tf.nn.relu),
-                #tf.keras.layers.Dense(512, activation=tf.nn.relu),
+                # tf.keras.layers.Dense(512, activation=tf.nn.relu),
                 tf.keras.layers.Dropout(0.2),
                 tf.keras.layers.Dense(outputsize, activation=tf.nn.softmax)
             ],

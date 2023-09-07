@@ -20,8 +20,13 @@ class CNN_LSTM(SequenceNN):
         model.add(LSTM(units=100))
         model.add(Dropout(0.4))
         # model.add(TimeDistributed(MaxPooling1D(pool_size=2)))
-        #model.add(Dense(100, activation='relu'))
-        #model.add(Dense(100, activation='relu'))
+        # model.add(Dense(100, activation='relu'))
+        # model.add(Dense(100, activation='relu'))
         model.add(Dense(80, activation='relu'))
         model.add(Dense(outputsize, activation='softmax'))
         return model
+
+    # def _reshape(self, data):
+    #     if (len(data.shape) == 2):
+    #         return np.reshape(data, (data.shape[0], data.shape[1], 1))
+    #     return data

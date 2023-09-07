@@ -32,10 +32,10 @@ methods.meta_segmentation_sub_tasks = [
 
 
 methods.segmentation = [
-    # {'method': lambda: ar.segmentation.FixedEventWindow.FixedEventWindow(), 'params': [
-    #     {'size': 25},
-    #     {'shift': 1}
-    # ], 'findopt': False},
+    {'method': lambda: ar.segmentation.FixedEventWindow.FixedEventWindow(), 'params': [
+        {'size': 25},
+        {'shift': 1}
+    ], 'findopt': False},
 
     {'method': lambda: ar.segmentation.ActivityWindow.SlidingEventActivityWindow(), 'params': [
         {'size': 25},
@@ -49,12 +49,15 @@ methods.segmentation = [
     ], 'findopt': False
     },
     {'method': lambda: ar.segmentation.FixedEventWindow.FixedEventWindow(), 'params': [
-        {'var': 'size', 'min': 10, 'max': 30, 'type': 'int', 'init': 10, 'range': list(range(10, 26, 5))},
-        {'var': 'shift', 'min': 2, 'max': 20, 'type': 'int', 'init': 10, 'range': list(range(10, 16, 5))}
+        {'size': 10, 'range': list(range(10, 26, 5))},
+        # {'size':10, 'min': 10, 'max': 30},
+        {'shift': 10, 'range': list(range(10, 16, 5))}
     ], 'findopt': False},
     {'method': lambda: ar.segmentation.FixedSlidingWindow.FixedSlidingWindow(), 'params': [
-        {'var': 'size', 'min': 60, 'max': 15 * 60, 'type': 'float', 'init': 120 / 4, 'range': list(range(15, 76, 15))},
-        {'var': 'shift', 'min': 10, 'max': 7 * 60, 'type': 'float', 'init': 60 / 2, 'range': list(range(15, 45, 15))}
+        {'size': 30, 'range': list(range(15, 76, 15))},
+        {'shift': 10, 'range': list(range(15, 45, 15))}
+        # {'var': 'size', 'min': 60, 'max': 15 * 60, 'type': 'float', 'init': 120 / 4, 'range': list(range(15, 76, 15))},
+        # {'var': 'shift', 'min': 10, 'max': 7 * 60, 'type': 'float', 'init': 60 / 2, 'range': list(range(15, 45, 15))}
     ], 'findopt': False},
     {'method': lambda: ar.segmentation.Probabilistic.Probabilistic(), 'params': [], 'findopt': False},
     # {'method': lambda:segmentation.FixedTimeWindow.FixedTimeWindow(), 'params':[

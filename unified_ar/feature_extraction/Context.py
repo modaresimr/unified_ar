@@ -56,10 +56,16 @@ class Diff(FeatureExtraction):
 
         super().precompute(datasetdscr, windows)
 
+    def prepare4test(self):
+        self.currentId = 0
+
     def featureExtract2(self, s_event_list, idx):
+        # print(idx, self.currentId)
+        # if len(idx) < 2:
+        #     return
         window = s_event_list
         if idx[0] < self.currentId:
-            raise Error('error idx is not sequentioal')
+            raise Exception('error idx is not sequentioal')
 
         while self.currentId < idx[0]:
             self.currentState[self.datasetdscr.sensor_id_map_inverse[window[self.currentId, 0]]] = window[self.currentId, 2]
@@ -67,7 +73,8 @@ class Diff(FeatureExtraction):
 
         newState = self.currentState.copy()
         nid = self.currentId
-        while nid < idx[1]:
+        maxidx = idx[1] if len(idx) >= 2 else idx[0]
+        while nid < maxidx:
             newState[self.datasetdscr.sensor_id_map_inverse[window[nid, 0]]] = window[nid, 2]
             nid += 1
 
