@@ -2,7 +2,10 @@ import logging
 import numpy as np
 from tqdm.keras import TqdmCallback
 from sklearn.utils.class_weight import compute_class_weight
+from keras.callbacks import ModelCheckpoint
+from keras.callbacks import ReduceLROnPlateau
 from .classifier_abstract import Classifier
+import unified_ar as ar
 import tensorflow as tf
 # import tensorflow_addons as tfa
 
@@ -133,26 +136,24 @@ d            tuple(Tensor): (micro, macro, weighted)
         from unified_ar.constants import methods
 
         trainlabel = tf.keras.utils.to_categorical(trainlabel, num_classes=self.outputsize)
-        # from tf.keras.callbacks import EarlyStopping
+
         # mc = tf.keras.callbacks.ModelCheckpoint(path, monitor='val_accuracy', mode='max', verbose=1, save_best_only=True)
         tf.keras.backend.set_value(self.model.optimizer.lr, .01)
-        es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=50, restore_best_weights=True)
+        es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=20, restore_best_weights=True)
 
-        if len(logging.getLogger().handlers):
-            logpath = logging.getLogger().handlers[0].baseFilename[:-3] + f'/{methods.run_names["out"]}.csv'
-            from pathlib import Path
-            Path(logpath).parent.mkdir(parents=True, exist_ok=True)
-            csv_logger = tf.keras.callbacks.CSVLogger(logpath, append=True, separator=';')
-            callbacks = [self.tqdmcallback, es, csv_logger]
-        else:
-            csv_logger = None
-            logpath = None
-            callbacks = [self.tqdmcallback, es]
+        save_folder = ar.general.utils.get_save_folder()
 
+        logpath = f'{save_folder}/{methods.run_names["out"]}.csv'
+
+        csv_logger = tf.keras.callbacks.CSVLogger(logpath, append=True, separator=';')
+
+        filepath = f"{save_folder}/weights.best.hdf5"
+        checkpoint = ModelCheckpoint(filepath, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
+        callbacks = [self.tqdmcallback, es, csv_logger, checkpoint]
         self.model.fit(
             trainset,
             trainlabel,
-            batch_size=1024,
+            batch_size=100,
             epochs=self.epochs,
             validation_split=0.3,
             # class_weight=cw,
@@ -191,12 +192,12 @@ d            tuple(Tensor): (micro, macro, weighted)
 
     def save(self, file):
         logger.debug('saving model to %s', file)
-        self.model.save(file + '.h5')
+        self.model.save(file + '.keras')
 
     def load(self, file):
         logger.debug('loading model from %s', file)
-        if not ('.h5' in file):
-            file = file + '.h5'
+        if not ('.keras' in file):
+            file = file + '.keras'
         self.model = tf.keras.models.load_model(file)
 
 
@@ -204,7 +205,7 @@ class SequenceNN(KerasClassifier):
 
     def _reshape(self, data):
         if (len(data.shape) == 2):
-            return np.reshape(data, (1,data.shape[0], data.shape[1]))
+            return np.reshape(data, (data.shape[0], data.shape[1], 1))
         return data
 
 

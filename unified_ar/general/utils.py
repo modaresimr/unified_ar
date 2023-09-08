@@ -201,7 +201,7 @@ def configurelogger(file, dir, logparam=''):
     log_filename = os.path.basename(file).split('.')[0] + \
         '-%s-%s.log' % (datetime.now().strftime('%H-%M-%S'), logparam)
     # Setup output directory
-    output_dir = (dir if dir else 'logs')+datetime.now().strftime('/%Y-%m-%d/')
+    output_dir = (dir if dir else 'logs') + datetime.now().strftime('/%Y-%m-%d/')
 
     output_dir = os.path.abspath(os.path.expanduser(output_dir))
     if os.path.exists(output_dir):
@@ -461,3 +461,16 @@ def parallelRunner(parallel, runner, items):
             res = runner(item)
             pbar.update(1)
             yield res
+
+
+def get_save_folder():
+    if not len(logging.getLogger().handlers):
+        from datetime import datetime
+        configurelogger(__file__, datetime.now().strftime('%y%m%d_%H-%M-%S'), "")
+    try:
+        logpath = logging.getLogger().handlers[0].baseFilename[:-3]
+    except:
+        logpath = "logs/temp/txt.log"
+    from pathlib import Path
+    Path(logpath).parent.mkdir(parents=True, exist_ok=True)
+    return Path(logpath).parent.absolute()
