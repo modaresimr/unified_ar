@@ -22,3 +22,4 @@ tensorflow
 # pyactlearn @ git+https://github.com/TinghuiWang/pyActLearn
 # cython
 libsvm
+nbformat
