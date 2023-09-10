@@ -2,6 +2,8 @@ import time
 from ipywidgets import Button
 from jupyter_ui_poll import ui_events
 from tqdm.notebook import tqdm
+import ipywidgets as widgets
+from IPython.display import display
 
 
 def wait_for_user(ui):
@@ -17,3 +19,4 @@ def wait_for_user(ui):
             if (i % 100) == 0:
                 print('\r', )
     print('continuing...')
+

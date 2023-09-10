@@ -75,19 +75,13 @@ d            tuple(Tensor): (micro, macro, weighted)
     #     f1 = 2*p*r / (p+r+K.epsilon())
     #     f1 = tf.where(tf.math.is_nan(f1), tf.zeros_like(f1), f1)
     #     return K.mean(f1)
-    def _createmodel(self, inputsize, outputsize, update_model=False):
-        if update_model and hasattr(self, 'model'):
-            self.tqdmcallback = TqdmCallback(verbose=1)
-            from unified_ar.constants import methods
-            meta_path = methods.run_names.get('meta_base', '')
-            if meta_path:
-                logger.debug(f'loading meta train model {meta_path}')
-                self.model = tf.keras.models.load_model(f'save_data/{meta_path}/keras')
 
-            return self.model
+    def get_loss_functions(self):
+        return tf.keras.losses.CategoricalFocalCrossentropy()
+        # return 'categorical_crossentropy'
 
-        self.outputsize = outputsize
-
+    def get_metrics(self):
+        
         # a=tfa.metrics.F1Score(num_classes=outputsize,average='micro')
         # a.average ='macro'
         METRICS = [
@@ -109,10 +103,28 @@ d            tuple(Tensor): (micro, macro, weighted)
         # loss=tfa.losses.sigmoid_focal_crossentropy
         loss = 'sparse_categorical_crossentropy'
 
+        from keras.metrics import F1Score
+        f1_score_metric = F1Score(average='macro')
+        return ['accuracy', f1_score_metric]
+
+    def _createmodel(self, inputsize, outputsize, update_model=False):
+        if update_model and hasattr(self, 'model'):
+            self.tqdmcallback = TqdmCallback(verbose=1)
+            from unified_ar.constants import methods
+            meta_path = methods.run_names.get('meta_base', '')
+            if meta_path:
+                logger.debug(f'loading meta train model {meta_path}')
+                self.model = tf.keras.models.load_model(f'save_data/{meta_path}/keras')
+
+            return self.model
+
+        self.outputsize = outputsize
+
         model = self.getmodel(inputsize, outputsize)
         model.summary()
+
         # model.compile(optimizer='adam', loss=loss, metrics=METRICS)
-        model.compile(optimizer='adam', loss='categorical_crossentropy', metrics='accuracy')
+        model.compile(optimizer='adam', loss=self.get_loss_functions(), metrics=self.get_metrics())
         self.model = model
         self.tqdmcallback = TqdmCallback(verbose=1)
         return model
@@ -138,7 +150,7 @@ d            tuple(Tensor): (micro, macro, weighted)
         trainlabel = tf.keras.utils.to_categorical(trainlabel, num_classes=self.outputsize)
 
         # mc = tf.keras.callbacks.ModelCheckpoint(path, monitor='val_accuracy', mode='max', verbose=1, save_best_only=True)
-        tf.keras.backend.set_value(self.model.optimizer.lr, .01)
+        # tf.keras.backend.set_value(self.model.optimizer.lr, .01)
         es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=20, restore_best_weights=True)
 
         save_folder = ar.general.utils.get_save_folder()
@@ -149,16 +161,21 @@ d            tuple(Tensor): (micro, macro, weighted)
 
         filepath = f"{save_folder}/weights.best.hdf5"
         checkpoint = ModelCheckpoint(filepath, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
+        tensorboard_cb = tf.keras.callbacks.TensorBoard(save_folder)
+        # callbacks = [self.tqdmcallback, es, csv_logger, checkpoint, tensorboard_cb]
         callbacks = [self.tqdmcallback, es, csv_logger, checkpoint]
+
+        callbacks = []
         self.model.fit(
             trainset,
             trainlabel,
-            batch_size=100,
+            batch_size=self.batch_size,
             epochs=self.epochs,
-            validation_split=0.3,
+            validation_split=0.2,
+            shuffle=True,
             # class_weight=cw,
             callbacks=callbacks,
-            verbose=0)
+            verbose=1)
         self.trained = True
 
         path = f'save_data/{methods.run_names["out"]}/keras'
@@ -239,84 +256,6 @@ class LSTMAE(SequenceNN):
                 tf.keras.layers.Dense(outputsize, activation=tf.nn.softmax)
             ],
             name=self.shortname())
-
-
-class FCN(SequenceNN):
-
-    def getmodel(self, inputsize, outputsize):
-
-        import tensorflow as tf
-        from tensorflow.keras.layers import Input, Masking, Conv1D, BatchNormalization, Activation, GlobalAveragePooling1D, Dense
-        from tensorflow.keras.models import Model
-        # from tensorflow.keras.activations import *
-
-        nb_classes = outputsize
-        print(f'inputsize {inputsize}')
-        s1 = inputsize[0]
-        s2 = inputsize[1]
-
-        input_layer = Input(shape=((s1, s2)))
-
-        mask = Masking(mask_value=0.0)(input_layer)
-
-        conv1 = Conv1D(filters=128, kernel_size=8, padding='same')(mask)
-        conv1 = BatchNormalization()(conv1)
-        conv1 = Activation(activation='relu')(conv1)
-
-        conv2 = Conv1D(filters=256, kernel_size=5, padding='same')(conv1)
-        conv2 = BatchNormalization()(conv2)
-        conv2 = Activation('relu')(conv2)
-
-        conv3 = Conv1D(128, kernel_size=3, padding='same')(conv2)
-        conv3 = BatchNormalization()(conv3)
-        conv3 = Activation('relu')(conv3)
-
-        gap_layer = GlobalAveragePooling1D()(conv3)
-
-        output_layer = Dense(nb_classes, activation='softmax')(gap_layer)
-
-        model = Model(inputs=input_layer, outputs=output_layer, name="FCN")
-
-        return model
-
-
-class FCNEmbedded(SequenceNN):
-
-    def getmodel(self, inputsize, outputsize):
-
-        import tensorflow as tf
-        from tensorflow.keras.layers import Embedding, Input, Conv1D, BatchNormalization, Activation, GlobalAveragePooling1D, Dense, Dropout
-        from tensorflow.keras.models import Model
-        # from tensorflow.keras.activations import *
-        nb_classes = outputsize
-
-        n_timesteps = inputsize.shape[1]
-
-        input_layer = Input(shape=((n_timesteps,)))
-
-        embedding = Embedding(input_dim=vocab_size + 1, output_dim=64, input_length=n_timesteps, mask_zero=True)(input_layer)
-
-        conv1 = Conv1D(filters=128, kernel_size=8, padding='same')(embedding)
-        conv1 = BatchNormalization()(conv1)
-        conv1 = Activation(activation='relu')(conv1)
-
-        conv2 = Conv1D(filters=256, kernel_size=5, padding='same')(conv1)
-        conv2 = BatchNormalization()(conv2)
-        conv2 = Activation('relu')(conv2)
-
-        conv3 = Conv1D(128, kernel_size=3, padding='same')(conv2)
-        conv3 = BatchNormalization()(conv3)
-        conv3 = Activation('relu')(conv3)
-
-        gap_layer = GlobalAveragePooling1D()(conv3)
-
-        x = Dropout(0.5)(gap_layer)
-
-        output_layer = Dense(nb_classes, activation='softmax')(x)
-
-        model = Model(inputs=input_layer, outputs=output_layer, name="FCN_Embedded")
-
-        return model
 
 
 class SimpleKeras(KerasClassifier):

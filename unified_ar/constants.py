@@ -38,8 +38,8 @@ methods.segmentation = [
     ], 'findopt': False},
 
     {'method': lambda: ar.segmentation.ActivityWindow.SlidingEventActivityWindow(), 'params': [
-        {'size': 25},
-        {'shift': 1}
+        {'size': 250},
+        {'shift': 120}
     ], 'findopt': False},
 
     {'method': lambda: ar.segmentation.MetaDecomposition.SWMeta(), 'params': [
@@ -71,10 +71,26 @@ methods.preprocessing = [
 ]
 methods.classifier = [
     {'method': lambda: ar.classifier.CNN_LSTM.CNN_LSTM(), 'params': [
-        {'epochs': 400}
+        {'epochs': 400},
+        {'batch_size': 64}
     ]},
-    {'method': lambda: ar.classifier.Keras.FCN(), 'params': [
-        {'epochs': 400}
+    {'method': lambda: ar.classifier.DeepW2V.FCN(), 'params': [
+        {'epochs': 400},
+        {'batch_size': 64}
+    ]},
+    {'method': lambda: ar.classifier.DeepW2V.FCNEmbedded(), 'params': [
+        {'epochs': 400},
+        {'batch_size': 64},
+        {'vocab_size': 1000}
+
+    ]},
+    {'method': lambda: ar.classifier.DeepW2V.LiciottiBiLSTM(), 'params': [
+        {'epochs': 400},
+        {'batch_size': 64},
+        {'vocab_size': 1000},
+        {"emb_dim": 64},
+        {"nb_units": 64}
+
     ]},
 
     {'method': lambda: ar.classifier.MySKLearn.UAR_RandomForest(), 'params': [
@@ -84,13 +100,16 @@ methods.classifier = [
         {'max_features_rate': .5}
     ]},
     {'method': lambda: ar.classifier.Keras.SimpleKeras(), 'params': [
-        {'epochs': 10}
+        {'epochs': 400},
+        {'batch_size': 64},
     ]},
     {'method': lambda: ar.classifier.Keras.LSTMTest(), 'params': [
-        {'epochs': 10}
+        {'epochs': 400},
+        {'batch_size': 64},
     ]},
     {'method': lambda: ar.classifier.Keras.LSTMAE(), 'params': [
-        {'epochs': 10}
+        {'epochs': 400},
+        {'batch_size': 64},
     ]},
     {'method': lambda: ar.classifier.libsvm.LibSVM()},
 
@@ -144,7 +163,7 @@ methods.evaluation = [
 
 
 methods.feature_extraction = [
-    {'method': lambda: ar.feature_extraction.NLP.SensorWord(), 'params': [], 'findopt': False},
+    {'method': lambda: ar.feature_extraction.NLP.SensorWord(), 'params': [{'vocab_size': 1000}], 'findopt': False},
     {'method': lambda: ar.feature_extraction.Recent.Recent(), 'params': [{'lastState': False}], 'findopt': False},
     {'method': lambda: ar.feature_extraction.KHistory.KHistory(), 'params': [{'k': 4}, {'method': ar.feature_extraction.Simple.Simple()}], 'findopt': False},
     {'method': lambda: ar.feature_extraction.Simple.Simple(), 'params': [], 'findopt': False},

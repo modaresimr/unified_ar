@@ -69,6 +69,7 @@ class NormalStrategy(MLStrategy):
         if len(Sdata.set) == 0:
             return None
         if (train):
+            func.classifier.func = func
             func.classifier.createmodel(Sdata.set[0].shape, len(self.acts), update_model=update_model)
             func.classifier.setWeight(self.weight)
             logger.debug('Classifier model created  %s' % (func.classifier.shortname()))

@@ -8,9 +8,10 @@ class SensorWord(FeatureExtraction):
         self.max_win = 50  # max([len(w) for w in windows])
         # self.max_win = max([len(w) for w in windows])
         from tensorflow.keras.preprocessing.text import Tokenizer
-        self.tokenizer = Tokenizer(filters='!"#$%&()*+,-/:;<=>?@[\\]^_`{|}~\t\n', num_words=1000)  # , oov_token='other')
-        items = datasetdscr.sensor_events['SID'].astype(str)+datasetdscr.sensor_events['value'].astype(str).values
+        self.tokenizer = Tokenizer(filters='!"#$%&()*+,-/:;<=>?@[\\]^_`{|}~\t\n', num_words=self.vocab_size, oov_token="<UNK>")  # , oov_token='other')
+        items = datasetdscr.sensor_events['SID'].astype(str) + datasetdscr.sensor_events['value'].astype(str).values
         self.tokenizer.fit_on_texts(items)
+
         # print(f'precompute finished dictsize={len(self.tokenizer.word_index)}')
         self.shape = (self.max_win,)
 
@@ -25,9 +26,9 @@ class SensorWord(FeatureExtraction):
         f = np.zeros(self.shape)
 
         # for i in range(len(idx)-1, max(-1, len(idx)-self.max_win-1), -1):
-        sindx = max(0, len(idx)-self.max_win)
+        sindx = max(0, len(idx) - self.max_win)
         eindx = len(idx)
-        t = max(0, self.max_win-eindx-sindx)
+        t = max(0, self.max_win - eindx - sindx)
         for i in range(sindx, eindx):
             sname = window[idx[i], 0]
             # svalue = int(window[idx[i], 2])
@@ -78,7 +79,7 @@ class SensorWordNormal(FeatureExtraction):
     def featureExtract2(self, s_event_list, idx):
         window = s_event_list
         f = np.zeros(self.shape)
-        for t, i in enumerate(range(len(idx)-1, max(-1, len(idx)-self.max_win-1), -1)):
+        for t, i in enumerate(range(len(idx) - 1, max(-1, len(idx) - self.max_win - 1), -1)):
             sname = window[idx[i], 0]
             svalue = int(window[idx[i], 2])
 
