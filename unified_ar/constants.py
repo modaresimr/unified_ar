@@ -33,8 +33,8 @@ methods.meta_segmentation_sub_tasks = [
 
 methods.segmentation = [
     {'method': lambda: ar.segmentation.FixedEventWindow.FixedEventWindow(), 'params': [
-        {'size': 25},
-        {'shift': 1}
+        {'size': 120},
+        {'shift': 20}
     ], 'findopt': False},
 
     {'method': lambda: ar.segmentation.ActivityWindow.SlidingEventActivityWindow(), 'params': [

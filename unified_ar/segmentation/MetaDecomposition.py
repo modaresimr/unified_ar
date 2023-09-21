@@ -136,7 +136,7 @@ class SWMeta(Segmentation):
         else:
             meta_dataset = utils.loadState(
                 "meta_dataset 220602_23-52-11-A4H-Namespace(classifier=0, comment='0', dataset=3, evaluation=0, feature_extraction=0, mlstrategy=0, output='logs', segmentation=0) 0")
-        ddd
+        
         self.ml = self.create_train_model(meta_dataset)
 
     def create_feat_transformer(self, feat):

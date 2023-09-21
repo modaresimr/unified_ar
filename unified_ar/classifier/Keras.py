@@ -81,7 +81,7 @@ d            tuple(Tensor): (micro, macro, weighted)
         # return 'categorical_crossentropy'
 
     def get_metrics(self):
-        
+
         # a=tfa.metrics.F1Score(num_classes=outputsize,average='micro')
         # a.average ='macro'
         METRICS = [
@@ -162,10 +162,9 @@ d            tuple(Tensor): (micro, macro, weighted)
         filepath = f"{save_folder}/weights.best.hdf5"
         checkpoint = ModelCheckpoint(filepath, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
         tensorboard_cb = tf.keras.callbacks.TensorBoard(save_folder)
-        # callbacks = [self.tqdmcallback, es, csv_logger, checkpoint, tensorboard_cb]
-        callbacks = [self.tqdmcallback, es, csv_logger, checkpoint]
+        callbacks = [self.tqdmcallback, es, csv_logger, checkpoint, tensorboard_cb]
+        # callbacks = [self.tqdmcallback, es, csv_logger, checkpoint]
 
-        callbacks = []
         self.model.fit(
             trainset,
             trainlabel,
@@ -175,7 +174,7 @@ d            tuple(Tensor): (micro, macro, weighted)
             shuffle=True,
             # class_weight=cw,
             callbacks=callbacks,
-            verbose=1)
+            verbose=0)
         self.trained = True
 
         path = f'save_data/{methods.run_names["out"]}/keras'
