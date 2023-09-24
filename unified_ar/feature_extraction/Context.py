@@ -67,8 +67,10 @@ class Diff(FeatureExtraction):
         if idx[0] < self.currentId:
             raise Exception('error idx is not sequentioal')
 
+        #update the current state with the latest events from the previous window start and shift
         while self.currentId < idx[0]:
-            self.currentState[self.datasetdscr.sensor_id_map_inverse[window[self.currentId, 0]]] = window[self.currentId, 2]
+            sid=self.datasetdscr.sensor_id_map_inverse[window[self.currentId, 0]]
+            self.currentState[sid] = window[self.currentId, 2]
             self.currentId += 1
 
         newState = self.currentState.copy()

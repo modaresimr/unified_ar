@@ -666,9 +666,7 @@ def plot_CM(dataset, evalres):
     plot_CM_normal(sumcm, dataset.activities)
 
 
-def tmp(cm, acts):
-    import matplotlib.pyplot as plt
-    import numpy as np
+def tmp(cm, acts):  
 
     plt.imshow(cm, interpolation='nearest')
     plt.xticks(np.arange(0, len(acts)), acts)
@@ -696,7 +694,7 @@ def plot_CM_normal(cm, acts, title=None, ax=None):
     if ax == None:
         ax = plt.axes()
     ax.set_aspect(1)
-    res = ax.imshow(np.array(norm_conf), cmap=plt.cm.jet, interpolation='nearest')
+    cax = ax.matshow(np.array(norm_conf), cmap=plt.cm.jet, interpolation='nearest')
 
     width, height = conf_arr.shape
 
@@ -705,13 +703,17 @@ def plot_CM_normal(cm, acts, title=None, ax=None):
     # 		ax.annotate(str(conf_arr[x][y]), xy=(y, x),
     # 					horizontalalignment='center',
     # 					verticalalignment='center')
+    # cbar_ax = ax.figure.add_axes([0.85, 0.15, 0.05, 0.7])
 
-    cb = ax.get_figure().colorbar(res, ax=ax)
+    cb = ax.figure.colorbar(cax, ax=ax,shrink=0.5)
+
     ax.set_xlim(-.5, len(acts) - .5)
     ax.set_ylim(-.5, len(acts) - .5)
     ax.set_title(title)
     # alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     plt.xticks(range(width), acts, rotation=-90)
+    ax.tick_params(axis='x', bottom=True, top=False, labelbottom=True, labeltop=False)
+
     ax.set_xticks(range(width))
     ax.set_xticklabels(acts, rotation=-90)
     plt.yticks(range(height), acts)

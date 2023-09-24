@@ -1,5 +1,4 @@
-dataset:
-  title: "Home2"
-  class: 'unified_ar.datatool.CASAS'
-  params:
-    datadir: "datasets/casas/home2"
+title: "Home2"
+class: 'unified_ar.datatool.CASAS'
+params:
+  datadir: "datasets/casas/home2"

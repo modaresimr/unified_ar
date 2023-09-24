@@ -104,7 +104,7 @@ d            tuple(Tensor): (micro, macro, weighted)
         loss = 'sparse_categorical_crossentropy'
 
         from keras.metrics import F1Score
-        f1_score_metric = F1Score(average='macro')
+        f1_score_metric = F1Score(average='weighted')
         return ['accuracy', f1_score_metric]
 
     def _createmodel(self, inputsize, outputsize, update_model=False):
@@ -159,8 +159,13 @@ d            tuple(Tensor): (micro, macro, weighted)
 
         csv_logger = tf.keras.callbacks.CSVLogger(logpath, append=True, separator=';')
 
-        filepath = f"{save_folder}/weights.best.hdf5"
-        checkpoint = ModelCheckpoint(filepath, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
+        filepath = f"{save_folder}/weights-best"
+        checkpoint = ModelCheckpoint(
+             filepath,save_weights_only=True,
+             monitor='val_accuracy', 
+             verbose=1, 
+             save_best_only=True, 
+             mode='max')
         tensorboard_cb = tf.keras.callbacks.TensorBoard(save_folder)
         callbacks = [self.tqdmcallback, es, csv_logger, checkpoint, tensorboard_cb]
         # callbacks = [self.tqdmcallback, es, csv_logger, checkpoint]
@@ -220,6 +225,7 @@ d            tuple(Tensor): (micro, macro, weighted)
 class SequenceNN(KerasClassifier):
 
     def _reshape(self, data):
+        print("shape",data.shape)
         if (len(data.shape) == 2):
             return np.reshape(data, (data.shape[0], data.shape[1], 1))
         return data
@@ -267,6 +273,29 @@ class SimpleKeras(KerasClassifier):
             tf.keras.layers.Dense(outputsize, activation=tf.nn.softmax)
         ],
             name=self.shortname())
+
+class NormalKeras(KerasClassifier):
+
+    def getmodel(self, inputsize, outputsize):
+        return tf.keras.models.Sequential([
+            tf.keras.layers.Dense(128, input_shape=inputsize, kernel_regularizer=tf.keras.regularizers.l2(0.01)),
+            tf.keras.layers.BatchNormalization(),
+            tf.keras.layers.Activation(tf.keras.layers.LeakyReLU()),
+            tf.keras.layers.Dense(64),
+            tf.keras.layers.BatchNormalization(),
+            tf.keras.layers.Activation(tf.keras.layers.LeakyReLU()),
+            tf.keras.layers.Dense(32),
+            tf.keras.layers.BatchNormalization(),
+            tf.keras.layers.Activation(tf.keras.layers.LeakyReLU()),
+            tf.keras.layers.Dense(64),
+            tf.keras.layers.BatchNormalization(),
+            tf.keras.layers.Activation(tf.keras.layers.LeakyReLU()),
+            tf.keras.layers.Dense(128),
+            tf.keras.layers.BatchNormalization(),
+            tf.keras.layers.Activation(tf.keras.layers.LeakyReLU()),
+            tf.keras.layers.Dropout(0.2),
+            tf.keras.layers.Dense(outputsize, activation=tf.nn.softmax)
+        ], name=self.shortname())
 
 
 class WangMLP(KerasClassifier):

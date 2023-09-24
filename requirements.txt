@@ -21,6 +21,5 @@ keras
 tensorflow
 # pyactlearn @ git+https://github.com/TinghuiWang/pyActLearn
 # cython
-libsvm
+#libsvm
 nbformat
-tensorflow-addons

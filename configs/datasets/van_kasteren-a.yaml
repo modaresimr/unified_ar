@@ -1,5 +1,4 @@
-dataset:
-  title: "Van_Kasteren A"
-  class: 'unified_ar.datatool.CASAS'
-  params:
-    datadir: "datasets/van_kasteren/A"
+title: "Van_Kasteren A"
+class: 'unified_ar.datatool.CASAS'
+params:
+  datadir: "datasets/van_kasteren/A"

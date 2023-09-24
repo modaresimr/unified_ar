@@ -33,6 +33,19 @@ methods.meta_segmentation_sub_tasks = [
 
 methods.segmentation = [
     {'method': lambda: ar.segmentation.FixedEventWindow.FixedEventWindow(), 'params': [
+        {'size': 15, 'range': list(range(10, 26, 5))},
+        # {'size':10, 'min': 10, 'max': 30},
+        {'shift': 5, 'range': list(range(10, 16, 5))}
+    ], 'findopt': False},
+    {'method': lambda: ar.segmentation.FixedSlidingWindow.FixedSlidingWindow(), 'params': [
+        {'size': 30, 'range': list(range(15, 76, 15))},
+        {'shift': 10, 'range': list(range(15, 45, 15))}
+        # {'var': 'size', 'min': 60, 'max': 15 * 60, 'type': 'float', 'init': 120 / 4, 'range': list(range(15, 76, 15))},
+        # {'var': 'shift', 'min': 10, 'max': 7 * 60, 'type': 'float', 'init': 60 / 2, 'range': list(range(15, 45, 15))}
+    ], 'findopt': False},
+    {'method': lambda: ar.segmentation.Probabilistic.Probabilistic(), 'params': [], 'findopt': False},
+
+    {'method': lambda: ar.segmentation.FixedEventWindow.FixedEventWindow(), 'params': [
         {'size': 120},
         {'shift': 20}
     ], 'findopt': False},
@@ -48,18 +61,7 @@ methods.segmentation = [
         {'meta_mode': 'keras'}
     ], 'findopt': False
     },
-    {'method': lambda: ar.segmentation.FixedEventWindow.FixedEventWindow(), 'params': [
-        {'size': 10, 'range': list(range(10, 26, 5))},
-        # {'size':10, 'min': 10, 'max': 30},
-        {'shift': 10, 'range': list(range(10, 16, 5))}
-    ], 'findopt': False},
-    {'method': lambda: ar.segmentation.FixedSlidingWindow.FixedSlidingWindow(), 'params': [
-        {'size': 30, 'range': list(range(15, 76, 15))},
-        {'shift': 10, 'range': list(range(15, 45, 15))}
-        # {'var': 'size', 'min': 60, 'max': 15 * 60, 'type': 'float', 'init': 120 / 4, 'range': list(range(15, 76, 15))},
-        # {'var': 'shift', 'min': 10, 'max': 7 * 60, 'type': 'float', 'init': 60 / 2, 'range': list(range(15, 45, 15))}
-    ], 'findopt': False},
-    {'method': lambda: ar.segmentation.Probabilistic.Probabilistic(), 'params': [], 'findopt': False},
+    
     # {'method': lambda:segmentation.FixedTimeWindow.FixedTimeWindow(), 'params':[
     #                  {'var':'size','min':pd.Timedelta(1, unit='s').total_seconds(), 'max': pd.Timedelta(30, unit='m').total_seconds(), 'type':'float','init':pd.Timedelta(15, unit='s').total_seconds()},
     #                  {'var':'shift','min':pd.Timedelta(1, unit='s').total_seconds(), 'max': pd.Timedelta(30, unit='m').total_seconds(), 'type':'float','init':pd.Timedelta(1, unit='s').total_seconds()}
@@ -70,10 +72,7 @@ methods.preprocessing = [
     {'method': lambda: ar.preprocessing.SimplePreprocessing.SimplePreprocessing()},
 ]
 methods.classifier = [
-    {'method': lambda: ar.classifier.CNN_LSTM.CNN_LSTM(), 'params': [
-        {'epochs': 400},
-        {'batch_size': 64}
-    ]},
+    
     {'method': lambda: ar.classifier.DeepW2V.FCN(), 'params': [
         {'epochs': 400},
         {'batch_size': 64}
@@ -82,7 +81,6 @@ methods.classifier = [
         {'epochs': 400},
         {'batch_size': 64},
         {'vocab_size': 1000}
-
     ]},
     {'method': lambda: ar.classifier.DeepW2V.LiciottiBiLSTM(), 'params': [
         {'epochs': 400},
@@ -90,16 +88,12 @@ methods.classifier = [
         {'vocab_size': 1000},
         {"emb_dim": 64},
         {"nb_units": 64}
-
-    ]},
-
-    {'method': lambda: ar.classifier.MySKLearn.UAR_RandomForest(), 'params': [
-        {'n_estimators': 20},
-        {'random_state': 0},
-        {'max_depth': 12},
-        {'max_features_rate': .5}
     ]},
     {'method': lambda: ar.classifier.Keras.SimpleKeras(), 'params': [
+        {'epochs': 400},
+        {'batch_size': 64},
+    ]},
+    {'method': lambda: ar.classifier.Keras.NormalKeras(), 'params': [
         {'epochs': 400},
         {'batch_size': 64},
     ]},
@@ -107,6 +101,17 @@ methods.classifier = [
         {'epochs': 400},
         {'batch_size': 64},
     ]},
+{'method': lambda: ar.classifier.CNN_LSTM.CNN_LSTM(), 'params': [
+        {'epochs': 400},
+        {'batch_size': 64}
+    ]},
+    {'method': lambda: ar.classifier.MySKLearn.UAR_RandomForest(), 'params': [
+        {'n_estimators': 20},
+        {'random_state': 0},
+        {'max_depth': 12},
+        {'max_features_rate': .5}
+    ]},
+    
     {'method': lambda: ar.classifier.Keras.LSTMAE(), 'params': [
         {'epochs': 400},
         {'batch_size': 64},

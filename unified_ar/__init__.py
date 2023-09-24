@@ -1,6 +1,7 @@
 
 import importlib
 import sys
+from . import common
 from .common import Data, MyTask, loader
 from .general import utils
 from . import datatool
@@ -9,7 +10,7 @@ from . import general
 from . import activity_fetcher
 from . import classifier
 from . import combiner
-from . import common
+
 from . import metric
 from . import ml_strategy
 from . import optimizer

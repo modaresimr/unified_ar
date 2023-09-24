@@ -90,7 +90,8 @@ def Main(argv):
     parser.add_argument('--seg_params', '-sp', action='append', help='segmentation parameter')
 
     parser.add_argument('--feature_extraction', '-f', type=int, default=0)
-    parser.add_argument('--classifier', type=int, default=0)
+    parser.add_argument('--model', '-m','--classifier', help='model',type=int, default=0)
+    # parser.add_argument('--classifier', type=int, default=0)
     parser.add_argument('--evaluation', help='evaluation', type=int, default=0)
     parser.add_argument('--comment', '-c', help='comment', default='')
     # parser.add_argument('--h5py', help='HDF5 dataset folder')
