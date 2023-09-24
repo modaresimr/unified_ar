@@ -79,7 +79,7 @@ def run(args):
 
 
 def Main(argv):
-    strargs = str(argv)
+    
 
     auto_profiler.Profiler.GlobalDisable = True
     parser = argparse.ArgumentParser(description='Run on datasets.')
@@ -96,7 +96,7 @@ def Main(argv):
     parser.add_argument('--comment', '-c', help='comment', default='')
     # parser.add_argument('--h5py', help='HDF5 dataset folder')
     args = parser.parse_args(argv)
-
+    strargs = '_'.join(argv)
     utils.configurelogger(__file__, args.output, strargs)
     import numpy
     import os
