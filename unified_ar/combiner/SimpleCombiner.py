@@ -72,7 +72,7 @@ class SimpleCombiner(Combiner):
 
 
 class EmptyCombiner(Combiner):
-
+    
     def combine2(self, times, act_data):
         predicted = np.argmax(act_data, axis=1)
         events = []
@@ -89,9 +89,17 @@ class EmptyCombiner(Combiner):
             if (pclass == 0):
                 continue
             if len(events) > 0:
+                priority_new=False
+                if not priority_new:
+                    start=max(events[-1]['EndTime'],start)
+                    if start >= end:
+                        start=end-epsilon
+
                 events[-1]['EndTime'] = min(events[-1]['EndTime'], start)
                 if events[-1]['StartTime'] >= events[-1]['EndTime']:
                     events.pop()
+                
+                    
             newe = {'Activity': pclass, 'StartTime': start, 'EndTime': end}
             if (len(events) > 0 and events[-1]['Activity'] == newe['Activity'] and events[-1]['EndTime'] < newe['StartTime']):
                 events.append({'Activity': pclass, 'StartTime': events[-1]['EndTime'], 'EndTime': newe['StartTime']})

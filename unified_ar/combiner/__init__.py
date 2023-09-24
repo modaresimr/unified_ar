@@ -1,4 +1,4 @@
-from . import SimpleCombiner
+from . import SimpleCombiner,KerasCombiner
 __import__('pkg_resources').declare_namespace(__name__)
 
 # from os.path import dirname, basename, isfile, join

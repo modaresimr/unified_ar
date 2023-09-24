@@ -9,7 +9,7 @@ import numpy as np
 
 
 class CASAS(Dataset):
-    def __init__(self, datadir, title, **kwargs):
+    def __init__(self, datadir=None, title=None, **kwargs):
         super().__init__(datadir, title)
 
     def _load(self):

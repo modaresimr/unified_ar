@@ -173,7 +173,10 @@ def get_runs_summary(dataset=''):
             return
 
         f1 = res['folds'][0]['quality']['f1']
-        disp_name = file+":f1="+str(f1)+"=="+res['folds'][0]['runname']+"===="+str(res['folds'])
+        runname=res['folds'][0]['runname']
+        runname=runname.replace('SimplePreprocessing','')
+        runname=runname.replace('CookActivityFetcher','')
+        disp_name = file+":f1="+str(f1)+"=="+runname+"===="+str(res['folds'])
         return (disp_name, file)
 
     from joblib import Parallel, delayed

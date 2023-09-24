@@ -30,12 +30,16 @@ def run(args):
         logger.error('Invalid evaluation argument')
         return
 
+    
+
     # logger.info(f'dataset={datasetdscr}')
     strategy = methods.mlstrategy[args.mlstrategy]['method']()
     evaluation = methods.evaluation[args.evaluation]['method']()
 
     if (args.feature_extraction >= 0):
         methods.feature_extraction = [methods.feature_extraction[args.feature_extraction]]
+    if (args.combiner >= 0):
+        methods.combiner = [methods.combiner[args.combiner]]
     if (args.segmentation >= 0):
         methods.segmentation = [methods.segmentation[args.segmentation]]
     if args.seg_params:
@@ -91,6 +95,7 @@ def Main(argv):
 
     parser.add_argument('--feature_extraction', '-f', type=int, default=0)
     parser.add_argument('--model', '-m','--classifier', help='model',type=int, default=0)
+    parser.add_argument('--combiner', type=int, default=0)
     # parser.add_argument('--classifier', type=int, default=0)
     parser.add_argument('--evaluation', help='evaluation', type=int, default=0)
     parser.add_argument('--comment', '-c', help='comment', default='')
