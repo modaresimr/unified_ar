@@ -96,7 +96,7 @@ def Main(argv):
     parser.add_argument('--comment', '-c', help='comment', default='')
     # parser.add_argument('--h5py', help='HDF5 dataset folder')
     args = parser.parse_args(argv)
-    strargs = '_'.join(argv)
+    strargs = '_'.join([str(a) for a in argv if '/' not in a and '=' not in a and 'output' not in a])
     utils.configurelogger(__file__, args.output, strargs)
     import numpy
     import os
