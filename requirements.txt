@@ -1,6 +1,6 @@
 grpcio
 numpy
-pandas<2.0.0
+pandas
 wget
 intervaltree
 # tensorflow==2.4.0
