@@ -5,11 +5,11 @@ import unified_ar.metric.Metrics
 
 
 def get_metric(metricname):
-    metrics = {'GEM': metric.Metrics.GEM(),
-               'GEM_NEW': metric.Metrics.GEM_NEW(),
-               'EventCM': metric.Metrics.EventCM(),
-               'Tatbul': metric.Metrics.Tatbul(),
-               'Classical': metric.Metrics.Classical(),
+    metrics = {'GEM': unified_ar.metric.Metrics.GEM(),
+               'GEM_NEW': unified_ar.metric.Metrics.GEM_NEW(),
+               'EventCM': unified_ar.metric.Metrics.EventCM(),
+               'Tatbul': unified_ar.metric.Metrics.Tatbul(),
+               'Classical': unified_ar.metric.Metrics.Classical(),
                }
     return metrics[metricname]
 
@@ -129,7 +129,7 @@ if __name__ == "__main__":
 
     files = ['200515_13-42-24-VanKasteren']
     titles = 'a,b,c'
-    metric = metric.Metrics.Tatbul()
+    metric = unified_ar.metric.Metrics.Tatbul()
     run_info = {}
     dataset = {}
     evalres = {}
