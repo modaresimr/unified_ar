@@ -48,7 +48,7 @@ def loadGemMetricUI():
     import pandas as pd
 
     @interact
-    def result_selector(file=result_analyse.resultloader.get_runs()):
+    def result_selector(file=unified_ar.result_analyse.resultloader.get_runs()):
         if (file == None):
             return
         print('Analysing ', file)
@@ -83,7 +83,7 @@ def loadGemMetricUI():
                 from matplotlib import pyplot as plt
                 plt.rc_context(rc={'figure.max_open_warning': 0})
                 import unified_ar.result_analyse.SpiderChart
-                result_analyse.SpiderChart.radar_factory(5, frame='polygon')
+                unified_ar.result_analyse.SpiderChart.radar_factory(5, frame='polygon')
                 acount = len(dataset.activities_map)
                 a_fig, a_ax = plt.subplots(acount - 1, 1, figsize=(10, acount * .25),)
     #             a_fig.tight_layout(pad=3.0)
@@ -237,7 +237,7 @@ def loadGemMultiUI():
     @interact
     def datasets(dataset=['Aruba', 'Home1', 'Home2', 'A4H', 'ward', 'VanKasteren']):
         @interact_manual
-        def compare(files=widgets.SelectMultiple(options=result_analyse.resultloader.get_runs_summary(dataset), description='Files', layout=Layout(width='100%', height='180px')), metric=metrics, titles="title1,title2"):
+        def compare(files=widgets.SelectMultiple(options=unified_ar.result_analyse.resultloader.get_runs_summary(dataset), description='Files', layout=Layout(width='100%', height='180px')), metric=metrics, titles="title1,title2"):
             if len(files) == 0:
                 return print('no file is selected')
             utils.reload()

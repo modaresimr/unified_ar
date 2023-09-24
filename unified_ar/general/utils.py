@@ -1,4 +1,5 @@
 import multiprocessing
+from lz4 import frame as lz4frame
 from tqdm.notebook import tqdm
 
 import pandas as pd
@@ -117,6 +118,15 @@ def saveState(vars, file, name='data'):
     # pickle.dump(vars, f)
     compress_pickle.dump(vars, pklfile + '.lz4')
 
+import pickle
+class ModuleRenamer(pickle.Unpickler):
+    def find_class(self, module, name):
+        if module.startswith("datatool") or module.startswith("general") :
+            module = "unified_ar."+module  # map old module name to new
+
+        return super().find_class(module, name)
+pickle.Unpickler = ModuleRenamer
+
 
 def loadState(file, name='data', raiseException=True):
     import compress_pickle
@@ -142,7 +152,10 @@ def loadState(file, name='data', raiseException=True):
         #         evalres[i]['test'].event_cm     =event_confusion_matrix(Sdata.a_events,Sdata.pred_events,datasetdscr.activities)
         #         evalres[i]['test'].quality      =CMbasedMetric(data.event_cm,'macro',None)
         #     return [run_info,datasetdscr,evalres]
-        return compress_pickle.load(pklfile + '.lz4')
+        with lz4frame.open(pklfile + '.lz4', 'rb') as file:
+            data = ModuleRenamer(file).load()
+        return data
+        # return compress_pickle.load(pklfile + '.lz4')
     except:
         if (raiseException):
             raise

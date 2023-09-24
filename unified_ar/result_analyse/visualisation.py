@@ -278,7 +278,7 @@ def plotMyMetric(allmetrics, acts, actmap={}):
         # plotJoinAct(dataset,real_events,pred_events,onlyAct=i)
         df = pd.DataFrame(metrics)
         name = actmap[act] if act in actmap else act
-        result_analyse.SpiderChart.radar_factory(len(metrics.columns), frame='polygon')
+        unified_ar.result_analyse.SpiderChart.radar_factory(len(metrics.columns), frame='polygon')
         print(name, "========")
         display(df.round(2))
 
@@ -293,7 +293,7 @@ def plotJoinMetric(joinmetrics, acts, actmap={}):
     col = min(4, acount)
     row = int(np.ceil((acount) / float(col)))
     import unified_ar.result_analyse.SpiderChart
-    result_analyse.SpiderChart.radar_factory(5, frame='polygon')
+    unified_ar.result_analyse.SpiderChart.radar_factory(5, frame='polygon')
     m_fig, m_ax = plt.subplots(row, col, figsize=(col * 3, row * 3), subplot_kw=dict(projection='radar'))
     if type(m_ax) != np.ndarray:
         m_ax = np.array([m_ax])
@@ -544,12 +544,11 @@ def plotJoinAct(dataset, real_acts, pred_acts, label=None, onlyAct=None, ax=None
         print('not enough data of this type', onlyAct)
         return
     if (len(pred_acts) == 0):
-        pred_acts = pred_acts.append({
+        pred_acts.loc[0]={
             'StartTime': real_acts.StartTime.iloc[0],
             'EndTime': real_acts.EndTime.iloc[0],
             'Activity': real_acts.Activity.iloc[0]
-        },
-            ignore_index=True)
+        }
         print('not enough p data of this type', onlyAct)
         print(pred_acts)
         return

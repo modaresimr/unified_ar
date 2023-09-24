@@ -50,8 +50,8 @@ def run(args):
     print(args.seg_params)
     # print('segme', methods.segmentation)
     # return
-    if (args.classifier >= 0):
-        methods.classifier = [methods.classifier[args.classifier]]
+    if (args.model >= 0):
+        methods.classifier = [methods.classifier[args.model]]
 
     datasetdscr = methods.dataset[args.dataset]['method']().load()
     run_date = datetime.now().strftime('%y%m%d_%H-%M-%S')

@@ -26,6 +26,9 @@ from . import evaluation
 def reload():
     dic = {module_name: module for module_name, module in sys.modules.items()}
     for module_name, module in dic.items():
-        if module_name.startswith('unified_ar'):
+        if not module_name.startswith('unified_ar'):
+            continue
             # print(module)
-            importlib.reload(module)
+        if "data" in f'{module}'.lower():
+            continue
+        importlib.reload(module)
