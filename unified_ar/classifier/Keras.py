@@ -77,7 +77,7 @@ d            tuple(Tensor): (micro, macro, weighted)
     #     return K.mean(f1)
 
     def get_loss_functions(self):
-        return tf.keras.losses.CategoricalFocalCrossentropy()
+        return categorical_focal_loss()
         # return 'categorical_crossentropy'
 
     def get_metrics(self):
@@ -138,7 +138,7 @@ d            tuple(Tensor): (micro, macro, weighted)
             cw = compute_class_weight("balanced", classes=classes, y=trainlabel)
         except:
             cw = np.ones(self.outputsize)
-        if hasattr(self,'weight') and  not (self.weight is None):
+        if hasattr(self, 'weight') and not (self.weight is None):
             cw *= self.weight
         cw = {c: cw[i] for i, c in enumerate(classes)}
 
@@ -161,11 +161,11 @@ d            tuple(Tensor): (micro, macro, weighted)
 
         filepath = f"{save_folder}/weights-best"
         checkpoint = ModelCheckpoint(
-             filepath,save_weights_only=True,
-             monitor='val_loss', 
-             verbose=1, 
-             save_best_only=True, 
-             mode='min')
+            filepath, save_weights_only=True,
+            monitor='val_loss',
+            verbose=1,
+            save_best_only=True,
+            mode='min')
         tensorboard_cb = tf.keras.callbacks.TensorBoard(save_folder)
         callbacks = [self.tqdmcallback, es, csv_logger, checkpoint, tensorboard_cb]
         # callbacks = [self.tqdmcallback, es, csv_logger, checkpoint]
@@ -225,7 +225,7 @@ d            tuple(Tensor): (micro, macro, weighted)
 class SequenceNN(KerasClassifier):
 
     def _reshape(self, data):
-        print("shape",data.shape)
+        print("shape", data.shape)
         if (len(data.shape) == 2):
             return np.reshape(data, (data.shape[0], data.shape[1], 1))
         return data
@@ -273,6 +273,7 @@ class SimpleKeras(KerasClassifier):
             tf.keras.layers.Dense(outputsize, activation=tf.nn.softmax)
         ],
             name=self.shortname())
+
 
 class NormalKeras(KerasClassifier):
 
@@ -329,3 +330,29 @@ class CategoricalTruePositives(tf.keras.metrics.Metric):
     def result(self):
 
         return self.cat_true_positives
+
+
+def categorical_focal_loss(gamma=2., alpha=.25):
+    def focal_loss(y_true, y_pred):
+        """
+        :param y_true: A tensor of the same shape as `y_pred`
+        :param y_pred: A tensor resulting from a softmax
+        :return: Output tensor.
+        """
+        # Scale predictions so that the class probas of each sample sum to 1
+        y_pred /= tf.keras.backend.sum(y_pred, axis=-1, keepdims=True)
+
+        # Clip the prediction value to prevent NaN's and Inf's
+        epsilon = tf.keras.backend.epsilon()
+        y_pred = tf.keras.backend.clip(y_pred, epsilon, 1. - epsilon)
+
+        # Calculate Cross Entropy
+        cross_entropy = -y_true * tf.keras.backend.log(y_pred)
+
+        # Calculate Focal Loss
+        loss = alpha * tf.keras.backend.pow(1 - y_pred, gamma) * cross_entropy
+
+        # Compute mean loss in mini-batch
+        return tf.keras.backend.mean(loss, axis=1)
+
+    return focal_loss
