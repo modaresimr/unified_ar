@@ -133,6 +133,10 @@ class EmptyCombiner2(Combiner):
                 continue
 
             while len(events) > 0:  # remove overlapping predictions
+                if not self.priority_new:
+                    start=max(events[-1]['EndTime'],start)
+                    if start >= end:
+                        start=end-epsilon
                 if events[-1]['StartTime'] > start:
                     events.pop()
                 else:

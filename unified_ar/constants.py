@@ -156,7 +156,8 @@ methods.activity_fetcher = [
 ]
 methods.combiner = [
     {'method': ar.combiner.KerasCombiner.KerasCombiner},
-    {'method': ar.combiner.SimpleCombiner.EmptyCombiner2},
+    {'method': ar.combiner.SimpleCombiner.EmptyCombiner2, 'params': [{'priority_new': True}]},
+    {'method': ar.combiner.SimpleCombiner.EmptyCombiner2, 'params': [{'priority_new': False}]},
     # {'method':lambda: ar.combiner.SimpleCombiner.SimpleCombiner()},
     # {'method':lambda: ar.combiner.SimpleCombiner.EmptyCombiner()},
 ]
