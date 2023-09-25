@@ -7,11 +7,14 @@ from keras.callbacks import ReduceLROnPlateau
 from .classifier_abstract import Classifier
 import unified_ar as ar
 import tensorflow as tf
+from tensorflow.keras import backend as K
 # import tensorflow_addons as tfa
 
 # tf.config.set_visible_devices([], 'GPU')
 
 logger = logging.getLogger(__file__)
+
+from .keras_utils import F1Score, categorical_focal_loss
 
 
 class KerasClassifier(Classifier):
@@ -80,7 +83,7 @@ d            tuple(Tensor): (micro, macro, weighted)
         return categorical_focal_loss()
         # return 'categorical_crossentropy'
 
-    def get_metrics(self):
+    def get_metrics(self, num_classes):
 
         # a=tfa.metrics.F1Score(num_classes=outputsize,average='micro')
         # a.average ='macro'
@@ -103,8 +106,7 @@ d            tuple(Tensor): (micro, macro, weighted)
         # loss=tfa.losses.sigmoid_focal_crossentropy
         loss = 'sparse_categorical_crossentropy'
 
-        from keras.metrics import F1Score
-        f1_score_metric = F1Score(average='weighted')
+        f1_score_metric = F1Score(num_classes, average='weighted')
         return ['accuracy', f1_score_metric]
 
     def _createmodel(self, inputsize, outputsize, update_model=False):
@@ -124,7 +126,7 @@ d            tuple(Tensor): (micro, macro, weighted)
         model.summary()
 
         # model.compile(optimizer='adam', loss=loss, metrics=METRICS)
-        model.compile(optimizer='adam', loss=self.get_loss_functions(), metrics=self.get_metrics())
+        model.compile(optimizer='adam', loss=self.get_loss_functions(), metrics=self.get_metrics(outputsize))
         self.model = model
         self.tqdmcallback = TqdmCallback(verbose=1)
         return model
@@ -330,29 +332,3 @@ class CategoricalTruePositives(tf.keras.metrics.Metric):
     def result(self):
 
         return self.cat_true_positives
-
-
-def categorical_focal_loss(gamma=2., alpha=.25):
-    def focal_loss(y_true, y_pred):
-        """
-        :param y_true: A tensor of the same shape as `y_pred`
-        :param y_pred: A tensor resulting from a softmax
-        :return: Output tensor.
-        """
-        # Scale predictions so that the class probas of each sample sum to 1
-        y_pred /= tf.keras.backend.sum(y_pred, axis=-1, keepdims=True)
-
-        # Clip the prediction value to prevent NaN's and Inf's
-        epsilon = tf.keras.backend.epsilon()
-        y_pred = tf.keras.backend.clip(y_pred, epsilon, 1. - epsilon)
-
-        # Calculate Cross Entropy
-        cross_entropy = -y_true * tf.keras.backend.log(y_pred)
-
-        # Calculate Focal Loss
-        loss = alpha * tf.keras.backend.pow(1 - y_pred, gamma) * cross_entropy
-
-        # Compute mean loss in mini-batch
-        return tf.keras.backend.mean(loss, axis=1)
-
-    return focal_loss
