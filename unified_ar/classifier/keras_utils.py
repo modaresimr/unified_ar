@@ -4,47 +4,31 @@ from tensorflow.keras import backend as K
 import tensorflow as tf
 from tensorflow.keras import backend as K
 
-class F1Score(tf.keras.metrics.Metric):
-    def __init__(self, num_classes, average='macro', name='f1_score', **kwargs):
-        super(F1Score, self).__init__(name=name, **kwargs)
-        self.num_classes = num_classes
-        self.average = average
-        self.true_positives = self.add_weight(name='tp', initializer='zeros', shape=(num_classes,))
-        self.false_positives = self.add_weight(name='fp', initializer='zeros', shape=(num_classes,))
-        self.false_negatives = self.add_weight(name='fn', initializer='zeros', shape=(num_classes,))
 
-    def update_state(self, y_true, y_pred, sample_weight=None):
-        y_true = tf.cast(y_true, tf.int32)
-        y_pred = tf.argmax(y_pred, axis=-1)
-        y_pred = tf.cast(y_pred, tf.int32)
+def F1Score(num_classes, average='macro'):
+    def f1_score(y_true, y_pred):
+        y_pred = tf.round(y_pred)
+        tp = [tf.reduce_sum(y_true[:, c] * y_pred[:, c]) for c in range(num_classes)]
+        fp = [tf.reduce_sum((1 - y_true[:, c]) * y_pred[:, c]) for c in range(num_classes)]
+        fn = [tf.reduce_sum(y_true[:, c] * (1 - y_pred[:, c])) for c in range(num_classes)]
 
-        for i in range(self.num_classes):
-            y_true_i = tf.cast(tf.equal(y_true, i), tf.float32)
-            y_pred_i = tf.cast(tf.equal(y_pred, i), tf.float32)
+        precision = [tp[c] / (tp[c] + fp[c] + K.epsilon()) for c in range(num_classes)]
+        recall = [tp[c] / (tp[c] + fn[c] + K.epsilon()) for c in range(num_classes)]
+        f1 = [2 * precision[c] * recall[c] / (precision[c] + recall[c] + K.epsilon()) for c in range(num_classes)]
 
-            self.true_positives[i].assign_add(tf.reduce_sum(y_true_i * y_pred_i))
-            self.false_positives[i].assign_add(tf.reduce_sum((1 - y_true_i) * y_pred_i))
-            self.false_negatives[i].assign_add(tf.reduce_sum(y_true_i * (1 - y_pred_i)))
+        if average == 'macro':
+            f1_score = tf.reduce_mean(f1)
+        elif average == 'micro':
+            f1_score = tf.reduce_sum(f1) / num_classes
+        elif average == 'weighted':
+            total_true = tf.reduce_sum(y_true)
+            f1_score = tf.reduce_sum(f1 * tf.reduce_sum(y_true, axis=0)) / total_true
+        else:
+            raise ValueError("Unknown average type. Must be one of ['macro', 'micro', 'weighted']")
 
-    def result(self):
-        precision = self.true_positives / (self.true_positives + self.false_positives + K.epsilon())
-        recall = self.true_positives / (self.true_positives + self.false_negatives + K.epsilon())
-        f1 = 2 * (precision * recall) / (precision + recall + K.epsilon())
+        return f1_score
 
-        if self.average == 'macro':
-            return tf.reduce_mean(f1)
-        elif self.average == 'micro':
-            return tf.reduce_sum(f1) / self.num_classes
-        elif self.average == 'weighted':
-            total_true = tf.reduce_sum(self.true_positives + self.false_negatives)
-            return tf.reduce_sum(f1 * (self.true_positives + self.false_negatives)) / total_true
-
-    def reset_states(self):
-        self.true_positives.assign(tf.zeros(self.num_classes))
-        self.false_positives.assign(tf.zeros(self.num_classes))
-        self.false_negatives.assign(tf.zeros(self.num_classes))
-
-
+    return f1_score
 
 
 def categorical_focal_loss(gamma=2., alpha=.25):
