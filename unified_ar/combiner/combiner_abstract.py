@@ -2,7 +2,7 @@ from unified_ar import MyTask
 
 
 class Combiner(MyTask):
-    def precompute(selfs_event_list, set_window, act_data,labels):
+    def precompute(self,s_event_list, set_window, act_data,labels,all_labels):
         times = []
 
         for i in range(0, len(set_window)):
@@ -11,7 +11,7 @@ class Combiner(MyTask):
             end = s_event_list[idx[-1], 1]
             times.append({'end': end, 'begin': start})
 
-        return self.precompute2(times, act_data,labels)
+        return self.precompute2(times, act_data,labels,all_labels)
 
     def combine(self, s_event_list, set_window, act_data):
         times = []
@@ -27,5 +27,5 @@ class Combiner(MyTask):
     def combine2(self, times, act_data):
         pass
 
-    def precompute2(self, times, act_data,labels):
+    def precompute2(self, times, act_data,labels,all_labels):
         pass

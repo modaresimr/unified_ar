@@ -138,7 +138,7 @@ d            tuple(Tensor): (micro, macro, weighted)
             cw = compute_class_weight("balanced", classes=classes, y=trainlabel)
         except:
             cw = np.ones(self.outputsize)
-        if not (self.weight is None):
+        if hasattr(self,'weight') and  not (self.weight is None):
             cw *= self.weight
         cw = {c: cw[i] for i, c in enumerate(classes)}
 
@@ -162,10 +162,10 @@ d            tuple(Tensor): (micro, macro, weighted)
         filepath = f"{save_folder}/weights-best"
         checkpoint = ModelCheckpoint(
              filepath,save_weights_only=True,
-             monitor='val_accuracy', 
+             monitor='val_loss', 
              verbose=1, 
              save_best_only=True, 
-             mode='max')
+             mode='min')
         tensorboard_cb = tf.keras.callbacks.TensorBoard(save_folder)
         callbacks = [self.tqdmcallback, es, csv_logger, checkpoint, tensorboard_cb]
         # callbacks = [self.tqdmcallback, es, csv_logger, checkpoint]

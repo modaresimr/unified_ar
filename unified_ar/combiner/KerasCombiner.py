@@ -14,12 +14,12 @@ logger = logging.getLogger(__file__)
 
 
 class KerasCombiner(Combiner):
-    def precompute2(self, times, act_data, labels):
+    def precompute2(self, times, act_data, labels,all_labels):
         trainX,trainY=self.create_XY(times,act_data,labels)
         from unified_ar.classifier.Keras import SimpleKeras
         keras=SimpleKeras()
         keras.applyParams({'epochs':100,'batch_size':32,'verbose':1})
-        keras.createmodel(trainX[0].shape,max(trainY))
+        keras.createmodel(trainX[0].shape,len(all_labels))
         keras.train(trainX,trainY)
         self.keras=keras
 
@@ -31,17 +31,17 @@ class KerasCombiner(Combiner):
         trainX=[]
         trainY=[]
         epsilon = pd.to_timedelta('1s')
-        for i in range(1,len(times)):
+        for i in range(0,len(times)):
             start = times[i]['begin']
             end = times[i]['end']
             # pclass = np.argmax(predicted[i])
-            
-            trainX.append([predicted[i-1],predicted[i],*act_data[i]])
+            previous=predicted[i-1] if i>1 else predicted[i]
+            trainX.append([previous,predicted[i],*act_data[i]])
             if labels is not None:
                 trainY.append(labels[i])
         
         
-        return trainX,trainY
+        return np.array(trainX),np.array(trainY)
 
     def combine2(self, times, act_data):
         testX,_=self.create_XY(times,act_data,None)
@@ -54,7 +54,7 @@ class KerasCombiner(Combiner):
         for i in range(len(times)):
             start = times[i]['begin']
             end = times[i]['end']
-            self.keras.predict_classes()
+            
             # pclass = np.argmax(predicted[i])
             pclass = predicted[i]
             if (pclass == 0):
