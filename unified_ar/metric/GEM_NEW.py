@@ -20,7 +20,7 @@ def eval(gt, pt, meta=None, clas=None, debug=0, calcne=0):
         gtc = gt.loc[gt.event_label == c]
         ptc = pt.loc[pt.event_label == c]
 
-        for f in gtc.filename.append(ptc.filename).unique():
+        for f in np.unique([*gtc.filename,*ptc.filename]):
             # if(c=='Blender'):debug=1
             if debug:
                 print(f'============== class={c}=========file={f}')

@@ -7,11 +7,14 @@ from keras.callbacks import ReduceLROnPlateau
 from .classifier_abstract import Classifier
 import unified_ar as ar
 import tensorflow as tf
+from tensorflow.keras import backend as K
 # import tensorflow_addons as tfa
 
 # tf.config.set_visible_devices([], 'GPU')
 
 logger = logging.getLogger(__file__)
+
+from .keras_utils import F1Score, categorical_focal_loss
 
 
 class KerasClassifier(Classifier):
@@ -77,10 +80,10 @@ d            tuple(Tensor): (micro, macro, weighted)
     #     return K.mean(f1)
 
     def get_loss_functions(self):
-        return tf.keras.losses.CategoricalFocalCrossentropy()
+        return categorical_focal_loss()
         # return 'categorical_crossentropy'
 
-    def get_metrics(self):
+    def get_metrics(self, num_classes):
 
         # a=tfa.metrics.F1Score(num_classes=outputsize,average='micro')
         # a.average ='macro'
@@ -103,8 +106,7 @@ d            tuple(Tensor): (micro, macro, weighted)
         # loss=tfa.losses.sigmoid_focal_crossentropy
         loss = 'sparse_categorical_crossentropy'
 
-        from keras.metrics import F1Score
-        f1_score_metric = F1Score(average='weighted')
+        f1_score_metric = F1Score(num_classes, average='weighted')
         return ['accuracy', f1_score_metric]
 
     def _createmodel(self, inputsize, outputsize, update_model=False):
@@ -124,7 +126,7 @@ d            tuple(Tensor): (micro, macro, weighted)
         model.summary()
 
         # model.compile(optimizer='adam', loss=loss, metrics=METRICS)
-        model.compile(optimizer='adam', loss=self.get_loss_functions(), metrics=self.get_metrics())
+        model.compile(optimizer='adam', loss=self.get_loss_functions(), metrics=self.get_metrics(outputsize))
         self.model = model
         self.tqdmcallback = TqdmCallback(verbose=1)
         return model
@@ -138,7 +140,7 @@ d            tuple(Tensor): (micro, macro, weighted)
             cw = compute_class_weight("balanced", classes=classes, y=trainlabel)
         except:
             cw = np.ones(self.outputsize)
-        if hasattr(self,'weight') and  not (self.weight is None):
+        if hasattr(self, 'weight') and not (self.weight is None):
             cw *= self.weight
         cw = {c: cw[i] for i, c in enumerate(classes)}
 
@@ -151,7 +153,7 @@ d            tuple(Tensor): (micro, macro, weighted)
 
         # mc = tf.keras.callbacks.ModelCheckpoint(path, monitor='val_accuracy', mode='max', verbose=1, save_best_only=True)
         # tf.keras.backend.set_value(self.model.optimizer.lr, .01)
-        es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=20, restore_best_weights=True)
+        es = tf.keras.callbacks.EarlyStopping(monitor='val_f1_score', mode='max', verbose=1, patience=20, restore_best_weights=True)
 
         save_folder = ar.general.utils.get_save_folder()
 
@@ -161,11 +163,11 @@ d            tuple(Tensor): (micro, macro, weighted)
 
         filepath = f"{save_folder}/weights-best"
         checkpoint = ModelCheckpoint(
-             filepath,save_weights_only=True,
-             monitor='val_loss', 
-             verbose=1, 
-             save_best_only=True, 
-             mode='min')
+            filepath, save_weights_only=True,
+            monitor='val_f1_score',
+            verbose=1,
+            save_best_only=True,
+            mode='max')
         tensorboard_cb = tf.keras.callbacks.TensorBoard(save_folder)
         callbacks = [self.tqdmcallback, es, csv_logger, checkpoint, tensorboard_cb]
         # callbacks = [self.tqdmcallback, es, csv_logger, checkpoint]
@@ -225,7 +227,7 @@ d            tuple(Tensor): (micro, macro, weighted)
 class SequenceNN(KerasClassifier):
 
     def _reshape(self, data):
-        print("shape",data.shape)
+        print("shape", data.shape)
         if (len(data.shape) == 2):
             return np.reshape(data, (data.shape[0], data.shape[1], 1))
         return data
@@ -273,6 +275,7 @@ class SimpleKeras(KerasClassifier):
             tf.keras.layers.Dense(outputsize, activation=tf.nn.softmax)
         ],
             name=self.shortname())
+
 
 class NormalKeras(KerasClassifier):
 
