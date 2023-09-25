@@ -24,6 +24,7 @@ for d in "${datasets[@]}"; do
             # Running the commands
             srun -N 1-1 --gpus=1 cat /etc/hostname
             ./node_single_run.sh -c comment -d "$d" -s "$s" -sp "$sp" -f "$f"  -st 0 -m "$m"
+exit
           done
         done
       done

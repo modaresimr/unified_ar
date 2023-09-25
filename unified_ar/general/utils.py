@@ -469,7 +469,11 @@ def parallelRunner(parallel, runner, items):
             pool.join()
             pool.close()
             raise KeyboardInterrupt
-    else:
+        except Exception as e:
+           print(f"parallel runner has an error for {items} rerun normal")
+           parallel=False
+           
+    if not parallel:
         for item in items:
             res = runner(item)
             pbar.update(1)
