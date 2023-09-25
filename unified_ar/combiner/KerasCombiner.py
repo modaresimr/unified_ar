@@ -60,8 +60,8 @@ class KerasCombiner(Combiner):
             if (pclass == 0):
                 continue
             if len(events) > 0:
-                priority_new=False
-                if not priority_new:
+                
+                if not self.priority_new:
                     start=max(events[-1]['EndTime'],start)
                     if start >= end:
                         start=end-epsilon

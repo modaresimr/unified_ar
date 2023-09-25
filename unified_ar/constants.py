@@ -155,7 +155,8 @@ methods.activity_fetcher = [
     {'method': lambda: ar.activity_fetcher.CookActivityFetcher.CookActivityFetcher()}
 ]
 methods.combiner = [
-    {'method': ar.combiner.KerasCombiner.KerasCombiner},
+    {'method': ar.combiner.KerasCombiner.KerasCombiner, 'params': [{'priority_new': True}]},
+    {'method': ar.combiner.KerasCombiner.KerasCombiner, 'params': [{'priority_new': False}]},
     {'method': ar.combiner.SimpleCombiner.EmptyCombiner2, 'params': [{'priority_new': True}]},
     {'method': ar.combiner.SimpleCombiner.EmptyCombiner2, 'params': [{'priority_new': False}]},
     # {'method':lambda: ar.combiner.SimpleCombiner.SimpleCombiner()},
