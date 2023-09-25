@@ -157,7 +157,7 @@ d            tuple(Tensor): (micro, macro, weighted)
 
         logpath = f'{save_folder}/{methods.run_names["out"]}.csv'
 
-        csv_logger = tf.keras.callbacks.CSVLogger(logpath, append=True, separator=';')
+        csv_logger = tf.keras.callbacks.CSVLogger(logpath, append=True, separator=',')
 
         filepath = f"{save_folder}/weights-best"
         checkpoint = ModelCheckpoint(
