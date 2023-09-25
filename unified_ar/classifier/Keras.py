@@ -153,7 +153,7 @@ d            tuple(Tensor): (micro, macro, weighted)
 
         # mc = tf.keras.callbacks.ModelCheckpoint(path, monitor='val_accuracy', mode='max', verbose=1, save_best_only=True)
         # tf.keras.backend.set_value(self.model.optimizer.lr, .01)
-        es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=20, restore_best_weights=True)
+        es = tf.keras.callbacks.EarlyStopping(monitor='val_f1_score', mode='max', verbose=1, patience=20, restore_best_weights=True)
 
         save_folder = ar.general.utils.get_save_folder()
 
@@ -164,10 +164,10 @@ d            tuple(Tensor): (micro, macro, weighted)
         filepath = f"{save_folder}/weights-best"
         checkpoint = ModelCheckpoint(
             filepath, save_weights_only=True,
-            monitor='val_loss',
+            monitor='val_f1_score',
             verbose=1,
             save_best_only=True,
-            mode='min')
+            mode='max')
         tensorboard_cb = tf.keras.callbacks.TensorBoard(save_folder)
         callbacks = [self.tqdmcallback, es, csv_logger, checkpoint, tensorboard_cb]
         # callbacks = [self.tqdmcallback, es, csv_logger, checkpoint]
