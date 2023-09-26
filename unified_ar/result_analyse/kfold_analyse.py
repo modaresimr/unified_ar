@@ -102,7 +102,7 @@ def mergeEvalsClassic(dataset, evalres, evalobj):
             res[act]['avg'] = add2Avg(res[act]['avg'], metr, len(evalres))
             res[act][fold] = metr
 
-        weights = dataset.activity_events['Activity'].value_counts()
+        weights = dataset.activity_events['Activity'].value_counts().to_dict()
 
         res['avg'] = add2Avg(res['avg'], res[act]['avg'], len(dataset.activities_map))
         res['avg_weighted'] = add2Avg(res['avg_weighted'], res[act]['avg'], sum(weights.values()), weights[act])
