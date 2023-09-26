@@ -310,8 +310,8 @@ def plotJoinMetric(joinmetrics, acts, actmap={}):
 
             # # # # # #{ VISUALISATION
             # if act:
-            if act == 'avg':
-                tmp = {(name, m, e): joinmetrics[m]['avg'][e] for m in joinmetrics for e in joinmetrics[m]['avg']}
+            if act in ['avg', 'avg_weighted']:
+                tmp = {(name, m, e): joinmetrics[m][act][e] for m in joinmetrics for e in joinmetrics[m][act]}
             else:
                 tmp = {(name, m, e): joinmetrics[m][act]['avg'][e] for m in joinmetrics for e in joinmetrics[m][act]['avg']}
 #                 print(actres[k])
@@ -544,7 +544,7 @@ def plotJoinAct(dataset, real_acts, pred_acts, label=None, onlyAct=None, ax=None
         print('not enough data of this type', onlyAct)
         return
     if (len(pred_acts) == 0):
-        pred_acts.loc[0]={
+        pred_acts.loc[0] = {
             'StartTime': real_acts.StartTime.iloc[0],
             'EndTime': real_acts.EndTime.iloc[0],
             'Activity': real_acts.Activity.iloc[0]
@@ -665,7 +665,7 @@ def plot_CM(dataset, evalres):
     plot_CM_normal(sumcm, dataset.activities)
 
 
-def tmp(cm, acts):  
+def tmp(cm, acts):
 
     plt.imshow(cm, interpolation='nearest')
     plt.xticks(np.arange(0, len(acts)), acts)
@@ -704,7 +704,7 @@ def plot_CM_normal(cm, acts, title=None, ax=None):
     # 					verticalalignment='center')
     # cbar_ax = ax.figure.add_axes([0.85, 0.15, 0.05, 0.7])
 
-    cb = ax.figure.colorbar(cax, ax=ax,shrink=0.5)
+    cb = ax.figure.colorbar(cax, ax=ax, shrink=0.5)
 
     ax.set_xlim(-.5, len(acts) - .5)
     ax.set_ylim(-.5, len(acts) - .5)
