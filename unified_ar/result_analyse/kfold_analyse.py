@@ -43,12 +43,12 @@ def mergeEvals(dataset, evalres, metricname):
     acts = range(1, len(dataset.activities_map))
     items = [(evalres, metricname, act) for act in acts]
     parallelRes = utils.parallelRunner(True, _evaluateAct, items)
-    weights = dataset.activity_events['Activity'].value_counts()
+    weights = dataset.activity_events['Activity'].value_counts().to_dict()
     res = {'avg': {}, 'avg_weighted': {}}
     for act, act_res in parallelRes:
         res[act] = act_res
         res['avg'] = add2Avg(res['avg'], res[act]['avg'], len(acts))
-        res['avg_weighted'] = add2Avg(res['avg_weighted'], res[act]['avg'], None, weights[act])
+        res['avg_weighted'] = add2Avg(res['avg_weighted'], res[act]['avg'], None, weights)
     return res
 
 
@@ -105,7 +105,7 @@ def mergeEvalsClassic(dataset, evalres, evalobj):
         weights = dataset.activity_events['Activity'].value_counts()
 
         res['avg'] = add2Avg(res['avg'], res[act]['avg'], len(dataset.activities_map))
-        res['avg_weighted'] = add2Avg(res['avg_weighted'], res[act]['avg'], None, weights[act])
+        res['avg_weighted'] = add2Avg(res['avg_weighted'], res[act]['avg'], None, weights)
 
         # print('.')
         # print(res);
