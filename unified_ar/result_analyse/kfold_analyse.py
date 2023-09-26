@@ -43,11 +43,12 @@ def mergeEvals(dataset, evalres, metricname):
     acts = range(1, len(dataset.activities_map))
     items = [(evalres, metricname, act) for act in acts]
     parallelRes = utils.parallelRunner(True, _evaluateAct, items)
-
+    weights = dataset.activity_events['Activity'].value_counts()
     res = {'avg': {}}
     for act, act_res in parallelRes:
         res[act] = act_res
         res['avg'] = add2Avg(res['avg'], res[act]['avg'], len(acts))
+        res['wavg'] = add2Avg(res['avg'], res[act]['avg']*weights[act], sum(weights))
     return res
 
 
