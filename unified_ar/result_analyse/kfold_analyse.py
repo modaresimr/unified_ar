@@ -48,7 +48,7 @@ def mergeEvals(dataset, evalres, metricname):
     for act, act_res in parallelRes:
         res[act] = act_res
         res['avg'] = add2Avg(res['avg'], res[act]['avg'], len(acts))
-        res['avg_weighted'] = add2Avg(res['avg'], res[act]['avg'], None, weights[act])
+        res['avg_weighted'] = add2Avg(res['avg_weighted'], res[act]['avg_weighted'], None, weights[act])
     return res
 
 
@@ -103,16 +103,16 @@ def mergeEvalsClassic(dataset, evalres, evalobj):
             res[act][fold] = metr
 
         weights = dataset.activity_events['Activity'].value_counts()
+
         res['avg'] = add2Avg(res['avg'], res[act]['avg'], len(dataset.activities_map))
-        res['avg_weighted'] = add2Avg(res['avg'], res[act]['avg'], None, weights)
+        res['avg_weighted'] = add2Avg(res['avg_weighted'], res[act]['avg_weighted'], None, weights[act])
+
         # print('.')
         # print(res);
     return res
 
 
 def add2Avg(oldd, newd, count, weights=None):
-    if weights is None:
-        weights = {item: 1 for item in newd}
 
     for item in newd:
         if type(newd[item]) == type({}):
@@ -120,8 +120,10 @@ def add2Avg(oldd, newd, count, weights=None):
         else:
             if not (item in oldd):
                 oldd[item] = 0
-
-            oldd[item] += np.array(newd[item]) * weights[item] / sum(weights.values())
+            if weights is None:
+                oldd[item] += np.array(newd[item]) / count
+            else:
+                oldd[item] += np.array(newd[item]) * weights[item] / sum(weights.values())
 
     # if 'f1' in newd and 'precision' in newd and 'recall' in newd:
     #     oldd['f1']=2*(oldd['precision']*oldd['recall'])/(oldd['precision']+oldd['recall']+.000000001)
