@@ -32,7 +32,7 @@ class OptLearn(MyTask):
         result = {}
         tmp = {}
 
-        @Cache.cachefunc(key=str(func.uniquekey)+shortrunname)
+        @Cache.cachefunc(key=str(func.uniquekey) + shortrunname)
         def qfunc(param):
             segparams = params.getParams(param, 0)
             feaparams = params.getParams(param, 1)
@@ -94,7 +94,7 @@ class ParamMaker:
                 for p in item.defparams:
                     bounds.append([p['min'], p['max']])
                     x0.append(p['init'])
-                    ranges.append(p['range'] if 'range' in p else list(range(p['min'], p['max'], (p['max']-p['min'])/5)))
+                    ranges.append(p['range'] if 'range' in p else list(range(p['min'], p['max'], (p['max'] - p['min']) / 5)))
         return x0, bounds, ranges
 
     def getParams(self, X, i):
@@ -108,9 +108,9 @@ class ParamMaker:
         fi = 0
         for j in range(i):
             if (items[j].findopt):
-                fi = fi+len(items[j].defparams)
+                fi = fi + len(items[j].defparams)
 
-        return self.convertArray2ParamsDic(X[fi:fi+len(items[i].defparams)], items[i].defparams)
+        return self.convertArray2ParamsDic(X[fi:fi + len(items[i].defparams)], items[i].defparams)
 
     def convertArray2ParamsDic(self, array, params):
         paramDic = {}

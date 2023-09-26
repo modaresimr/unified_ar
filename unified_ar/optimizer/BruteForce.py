@@ -93,4 +93,5 @@ def createFunction(function):
     res = function['method']()
     res.findopt = function['findopt'] if 'findopt' in function else False
     res.defparams = function['params'] if 'params' in function else []
+    res.applyDefParams(res.defparams)
     return res
