@@ -116,7 +116,11 @@ d            tuple(Tensor): (micro, macro, weighted)
             meta_path = methods.run_names.get('meta_base', '')
             if meta_path:
                 logger.debug(f'loading meta train model {meta_path}')
-                self.model = tf.keras.models.load_model(f'save_data/{meta_path}/keras')
+                metrics = self.get_metrics(outputsize)
+                metrics.append(self.get_loss_functions())
+                custom_objects = {m.__name__: m for m in metrics if type(m) is not str}
+
+                self.model = tf.keras.models.load_model(f'save_data/{meta_path}/keras', custom_objects=custom_objects)
 
             return self.model
 
