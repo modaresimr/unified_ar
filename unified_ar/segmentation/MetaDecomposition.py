@@ -30,10 +30,10 @@ class SWMeta(Segmentation):
         from unified_ar.constants import methods
         def_segments = methods.segmentation
         self.segmentor_dic = {p['method']().shortname(): p for p in methods.meta_segmentation_sub_tasks}
-        import ml_strategy.Simple
+        import unified_ar.ml_strategy.Simple
         import logging
 
-        fast_strategy = ml_strategy.Simple.NormalStrategy()
+        fast_strategy = unified_ar.ml_strategy.Simple.NormalStrategy()
 
         selectedSeg = methods.meta_segmentation_sub_tasks[0].copy()
         selectedSeg['findopt'] = False
@@ -136,7 +136,7 @@ class SWMeta(Segmentation):
         else:
             meta_dataset = utils.loadState(
                 "meta_dataset 220602_23-52-11-A4H-Namespace(classifier=0, comment='0', dataset=3, evaluation=0, feature_extraction=0, mlstrategy=0, output='logs', segmentation=0) 0")
-        
+
         self.ml = self.create_train_model(meta_dataset)
 
     def create_feat_transformer(self, feat):
