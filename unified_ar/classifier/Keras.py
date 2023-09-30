@@ -158,7 +158,8 @@ d            tuple(Tensor): (micro, macro, weighted)
         save_folder = ar.general.utils.get_save_folder()
 
         logpath = f'{save_folder}/{methods.run_names["out"]}.csv'
-
+        from pathlib import Path
+        Path(logpath).parent.mkdir(parents=True, exist_ok=True)
         csv_logger = tf.keras.callbacks.CSVLogger(logpath, append=True, separator=',')
 
         filepath = f"{save_folder}/weights-best"
