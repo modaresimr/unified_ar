@@ -19,69 +19,9 @@ from .keras_utils import F1Score, categorical_focal_loss
 
 class KerasClassifier(Classifier):
 
-    @staticmethod
-    def tf_f1_score(y_true, y_pred):
-        """Computes 3 different f1 scores, micro macro
-        weighted.
-        micro: f1 score accross the classes, as 1
-        macro: mean of f1 scores per class
-        weighted: weighted average of f1 scores per class,
-                weighted from the support of each class
-
-
-        Args:
-            y_true (Tensor): labels, with shape (batch, num_classes)
-            y_pred (Tensor): model's predictions, same shape as y_true
-
-        Returns:
-d            tuple(Tensor): (micro, macro, weighted)
-                        tuple of the computed f1 scores
-        """
-
-        f1s = [0, 0, 0]
-
-        y_true = tf.cast(y_true, tf.float64)
-        y_pred = tf.cast(y_pred, tf.float64)
-
-        for i, axis in enumerate([None, 0]):
-            TP = tf.math.count_nonzero(y_pred * y_true, axis=axis)
-            FP = tf.math.count_nonzero(y_pred * (y_true - 1), axis=axis)
-            FN = tf.math.count_nonzero((y_pred - 1) * y_true, axis=axis)
-
-            precision = TP / (TP + FP)
-            recall = TP / (TP + FN)
-            f1 = 2 * precision * recall / (precision + recall)
-
-            f1s[i] = tf.reduce_mean(f1)
-
-        weights = tf.reduce_sum(y_true, axis=0)
-        weights /= tf.reduce_sum(weights)
-
-        f1s[2] = tf.reduce_sum(f1 * weights)
-
-        micro, macro, weighted = f1s
-        return macro
-
-    # @staticmethod
-    # def f1(y_true, y_pred):
-    #     K=tf.keras.backend
-    #     y_true=K.cast(y_true, 'float')
-    #     y_pred = K.round(y_pred)
-    #     tp = K.sum(K.cast(y_true*y_pred, 'float'), axis=0)
-    #     tn = K.sum(K.cast((1-y_true)*(1-y_pred), 'float'), axis=0)
-    #     fp = K.sum(K.cast((1-y_true)*y_pred, 'float'), axis=0)
-    #     fn = K.sum(K.cast(y_true*(1-y_pred), 'float'), axis=0)
-
-    #     p = tp / (tp + fp + K.epsilon())
-    #     r = tp / (tp + fn + K.epsilon())
-
-    #     f1 = 2*p*r / (p+r+K.epsilon())
-    #     f1 = tf.where(tf.math.is_nan(f1), tf.zeros_like(f1), f1)
-    #     return K.mean(f1)
-
     def get_loss_functions(self):
-        return categorical_focal_loss()
-        # return 'categorical_crossentropy'
+        # return categorical_focal_loss()
+        return 'categorical_crossentropy'
 
     def get_metrics(self, num_classes):
 
@@ -104,10 +44,11 @@ d            tuple(Tensor): (micro, macro, weighted)
 
         # loss=tfa.losses.sparsemax_loss
         # loss=tfa.losses.sigmoid_focal_crossentropy
-        loss = 'sparse_categorical_crossentropy'
+        # loss = 'sparse_categorical_crossentropy'
 
-        f1_score_metric = F1Score(num_classes, average='weighted')
-        return ['accuracy', f1_score_metric]
+        # f1_score_metric = F1Score(num_classes, average='weighted')
+        # return ['accuracy', f1_score_metric]
+        return ['accuracy']
 
     def _createmodel(self, inputsize, outputsize, update_model=False):
         if update_model and hasattr(self, 'model'):
@@ -157,7 +98,7 @@ d            tuple(Tensor): (micro, macro, weighted)
 
         # mc = tf.keras.callbacks.ModelCheckpoint(path, monitor='val_accuracy', mode='max', verbose=1, save_best_only=True)
         # tf.keras.backend.set_value(self.model.optimizer.lr, .01)
-        es = tf.keras.callbacks.EarlyStopping(monitor='val_f1_score', mode='max', verbose=1, patience=20, restore_best_weights=True)
+        es = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', mode='max', verbose=1, patience=20, restore_best_weights=True)
 
         save_folder = ar.general.utils.get_save_folder()
 
@@ -169,7 +110,8 @@ d            tuple(Tensor): (micro, macro, weighted)
         filepath = f"{save_folder}/weights-best"
         checkpoint = ModelCheckpoint(
             filepath, save_weights_only=True,
-            monitor='val_f1_score',
+            # monitor='val_f1_score',
+            monitor='val_accuracy',
             verbose=1,
             save_best_only=True,
             mode='max')

@@ -55,3 +55,66 @@ def categorical_focal_loss(gamma=2., alpha=.25):
         return tf.keras.backend.mean(loss, axis=1)
 
     return focal_loss
+
+
+
+
+    @staticmethod
+    def tf_f1_score(y_true, y_pred):
+        """Computes 3 different f1 scores, micro macro
+        weighted.
+        micro: f1 score accross the classes, as 1
+        macro: mean of f1 scores per class
+        weighted: weighted average of f1 scores per class,
+                weighted from the support of each class
+
+
+        Args:
+            y_true (Tensor): labels, with shape (batch, num_classes)
+            y_pred (Tensor): model's predictions, same shape as y_true
+
+        Returns:
+d            tuple(Tensor): (micro, macro, weighted)
+                        tuple of the computed f1 scores
+        """
+
+        f1s = [0, 0, 0]
+
+        y_true = tf.cast(y_true, tf.float64)
+        y_pred = tf.cast(y_pred, tf.float64)
+
+        for i, axis in enumerate([None, 0]):
+            TP = tf.math.count_nonzero(y_pred * y_true, axis=axis)
+            FP = tf.math.count_nonzero(y_pred * (y_true - 1), axis=axis)
+            FN = tf.math.count_nonzero((y_pred - 1) * y_true, axis=axis)
+
+            precision = TP / (TP + FP)
+            recall = TP / (TP + FN)
+            f1 = 2 * precision * recall / (precision + recall)
+
+            f1s[i] = tf.reduce_mean(f1)
+
+        weights = tf.reduce_sum(y_true, axis=0)
+        weights /= tf.reduce_sum(weights)
+
+        f1s[2] = tf.reduce_sum(f1 * weights)
+
+        micro, macro, weighted = f1s
+        return macro
+
+    # @staticmethod
+    # def f1(y_true, y_pred):
+    #     K=tf.keras.backend
+    #     y_true=K.cast(y_true, 'float')
+    #     y_pred = K.round(y_pred)
+    #     tp = K.sum(K.cast(y_true*y_pred, 'float'), axis=0)
+    #     tn = K.sum(K.cast((1-y_true)*(1-y_pred), 'float'), axis=0)
+    #     fp = K.sum(K.cast((1-y_true)*y_pred, 'float'), axis=0)
+    #     fn = K.sum(K.cast(y_true*(1-y_pred), 'float'), axis=0)
+
+    #     p = tp / (tp + fp + K.epsilon())
+    #     r = tp / (tp + fn + K.epsilon())
+
+    #     f1 = 2*p*r / (p+r+K.epsilon())
+    #     f1 = tf.where(tf.math.is_nan(f1), tf.zeros_like(f1), f1)
+    #     return K.mean(f1)
