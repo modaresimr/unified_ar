@@ -1,4 +1,4 @@
 title: "Home2"
 class: 'unified_ar.datatool.A4H'
 params:
-  datadir: "datasets/orange4home"
+  datadir: "datasets/orange4home/"

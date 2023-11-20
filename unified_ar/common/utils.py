@@ -15,9 +15,11 @@ def class_by_name(clazz):
     module = __import__(module_name, fromlist=[class_name])
     return getattr(module, class_name)
 
-def loader(config,module):
-    cfg=config[module].copy()
-    return class_by_name(cfg.pop('class'))(**cfg)
+def loader(config,module=None):
+    cfg=config.get(module,config).copy()
+    params=cfg.get('params',{})
+    params['title']=cfg['title']
+    return class_by_name(cfg.pop('class'))(**params)
 
 
 

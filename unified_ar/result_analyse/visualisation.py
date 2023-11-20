@@ -24,7 +24,7 @@ def filterTime(events, duration=None):
     return events
 
 
-def plot_joint_events(dataset, real_events, pred_events, onlyAct=None, duration=None):
+def plot_joint_events(dataset, real_events, pred_events, onlyAct=None, duration=None,title=None):
     if duration == None:
         duration = [real_events.iloc[0]['StartTime'], real_events.iloc[0]['StartTime'] + pd.Timedelta('3d')]
     real_events = filterTime(real_events, duration)
@@ -33,7 +33,7 @@ def plot_joint_events(dataset, real_events, pred_events, onlyAct=None, duration=
     # visualize(dataset)
     # real_events, pred_events = remove_gaps(real_events, pred_events)
     print('visualizing real and pred1')
-    plotJoinAct(dataset, real_events, pred_events, onlyAct=onlyAct)
+    plotJoinAct(dataset, real_events, pred_events, onlyAct=onlyAct,label=title)
 
 
 def my_result_analyse(dataset, real_events, pred_events, onlyAct=None, duration=None):
@@ -380,76 +380,77 @@ def visualize(dataset):
 
 
 # +
-def plotJoinAct(dataset, real_acts, pred_acts, label=None, onlyAct=None, ax=None):
-    from pandas.plotting import register_matplotlib_converters
-    register_matplotlib_converters()
-    size = 0.45
-    acts = dataset.activities if onlyAct is None else [onlyAct]
-    if not (onlyAct is None):
-        real_acts = real_acts.loc[real_acts.Activity == onlyAct]
-        pred_acts = pred_acts.loc[pred_acts.Activity == onlyAct]
+# def plotJoinAct(dataset, real_acts, pred_acts, label=None, onlyAct=None, ax=None,title=None):
+#     from pandas.plotting import register_matplotlib_converters
+#     register_matplotlib_converters()
+#     size = 0.45
+#     acts = dataset.activities if onlyAct is None else [onlyAct]
+#     if not (onlyAct is None):
+#         real_acts = real_acts.loc[real_acts.Activity == onlyAct]
+#         pred_acts = pred_acts.loc[pred_acts.Activity == onlyAct]
 
-    if (len(real_acts) == 0):
-        print('not enough data of this type', onlyAct)
-        return
-    if (len(pred_acts) == 0):
-        pred_acts = pred_acts.append({
-            'StartTime': real_acts.StartTime.iloc[0],
-            'EndTime': real_acts.EndTime.iloc[0],
-            'Activity': real_acts.Activity.iloc[0]
-        },
-            ignore_index=True)
-        print('not enough p data of this type', onlyAct)
-        print(pred_acts)
-        return
+#     if (len(real_acts) == 0):
+#         print('not enough data of this type', onlyAct)
+#         return
+#     if (len(pred_acts) == 0):
+#         pred_acts = pred_acts.append({
+#             'StartTime': real_acts.StartTime.iloc[0],
+#             'EndTime': real_acts.EndTime.iloc[0],
+#             'Activity': real_acts.Activity.iloc[0]
+#         },
+#             ignore_index=True)
+#         print('not enough p data of this type', onlyAct)
+#         print(pred_acts)
+#         return
 
-#   ft=real_acts.StartTime.iloc[0]
-#   dur=ft+pd.to_timedelta('12h')
-#   real_acts=real_acts.loc[real_acts.StartTime<dur]
-#   pred_acts=pred_acts.loc[pred_acts.StartTime<dur]
-# apply(lambda x:dataset.activities_map[x.Activity], axis=1).tolist()
-    ract = (real_acts.Activity + (size / 2)).tolist()
-    rstart = real_acts.StartTime.tolist()
-    rend = real_acts.EndTime.tolist()
-    # .apply(lambda x:dataset.activities_map[x.Activity], axis=1).tolist()
-    pact = (pred_acts.Activity - (size / 2)).tolist()
-    pstart = pred_acts.StartTime.tolist()
-    pend = pred_acts.EndTime.tolist()
-    if ax == None:
-        if (onlyAct):
-            fig, ax = plt.subplots(figsize=(10, 0.5))
-        else:
-            fig, ax = plt.subplots(figsize=(50, len(acts)))
-    ax.set_title(label)
-    if (len(real_acts) == 0):
-        print('no r activity of this type', label)
-    else:
-        _plotActs(ax, ract, rstart, rend, linewidth=1, edgecolor='k', facecolor='g', size=size, alpha=.6)
-    if (len(pred_acts) == 0):
-        print('no p activity of this type', label)
-    else:
-        _plotActs(ax, pact, pstart, pend, linewidth=1, edgecolor='k', facecolor='r', size=size, alpha=.6)
+# #   ft=real_acts.StartTime.iloc[0]
+# #   dur=ft+pd.to_timedelta('12h')
+# #   real_acts=real_acts.loc[real_acts.StartTime<dur]
+# #   pred_acts=pred_acts.loc[pred_acts.StartTime<dur]
+# # apply(lambda x:dataset.activities_map[x.Activity], axis=1).tolist()
+#     ract = (real_acts.Activity + (size / 2)).tolist()
+#     rstart = real_acts.StartTime.tolist()
+#     rend = real_acts.EndTime.tolist()
+#     # .apply(lambda x:dataset.activities_map[x.Activity], axis=1).tolist()
+#     pact = (pred_acts.Activity - (size / 2)).tolist()
+#     pstart = pred_acts.StartTime.tolist()
+#     pend = pred_acts.EndTime.tolist()
+#     if ax == None:
+#         if (onlyAct):
+#             fig, ax = plt.subplots(figsize=(10, 0.5))
+#         else:
+#             fig, ax = plt.subplots(figsize=(50, len(acts)))
+#     ax.set_title(label)
+#     if (len(real_acts) == 0):
+#         print('no r activity of this type', label)
+#     else:
+#         _plotActs(ax, ract, rstart, rend, linewidth=1, edgecolor='k', facecolor='g', size=size, alpha=.6)
+#     if (len(pred_acts) == 0):
+#         print('no p activity of this type', label)
+#     else:
+#         _plotActs(ax, pact, pstart, pend, linewidth=1, edgecolor='k', facecolor='r', size=size, alpha=.6)
 
 
-#   data_linewidth_plot(pact, pstart, pend, ax=ax,
-#                       colors="red", alpha=1, linewidth=.3)
-# plt.hlines(ract, rstart, rend, colors=(0,.5,0,.2), linewidth=1)
-# plt.hlines(pact, pstart, pend, colors="red", lw=2)
-#   loc = mdates.AutoDateLocator()
-#   ax.xaxis.set_major_locator(loc)
-#   ax.xaxis.set_major_formatter(mdates.AutoDateFormatter(loc))
-    ax.set_xticks([])
-    ax.set_xlim(min(pstart + rstart), max(pend + rend))
-    ax.set_yticks([i for i in dataset.activities_map])
-    ax.yaxis.grid(True)
+# #   data_linewidth_plot(pact, pstart, pend, ax=ax,
+# #                       colors="red", alpha=1, linewidth=.3)
+# # plt.hlines(ract, rstart, rend, colors=(0,.5,0,.2), linewidth=1)
+# # plt.hlines(pact, pstart, pend, colors="red", lw=2)
+# #   loc = mdates.AutoDateLocator()
+# #   ax.xaxis.set_major_locator(loc)
+# #   ax.xaxis.set_major_formatter(mdates.AutoDateFormatter(loc))
+#     ax.set_xticks([])
+#     ax.set_xlim(min(pstart + rstart), max(pend + rend))
+#     ax.set_yticks([i for i in dataset.activities_map])
+#     ax.yaxis.grid(True)
 
-    ax.set_yticklabels([l for l in dataset.activities_map_inverse])
-    if (onlyAct):
-        ax.set_ylim(onlyAct - size, onlyAct + size)
-    else:
-        ax.set_ylim(0 + size, len(dataset.activities) - size)
-    plt.margins(0.1)
-    plt.show()
+#     ax.set_yticklabels([l for l in dataset.activities_map_inverse])
+#     if (onlyAct):
+#         ax.set_ylim(onlyAct - size, onlyAct + size)
+#     else:
+#         ax.set_ylim(0 + size, len(dataset.activities) - size)
+#     ax.set_title(title)
+#     plt.margins(0.1)
+#     plt.show()
 
 
 def plotJoinAct2(real_acts, pred_acts, acts, labels, ax=None, duration=None):
@@ -677,7 +678,8 @@ def tmp(cm, acts):
 def plot_CM_normal(cm, acts, title=None, ax=None):
     import numpy as np
     import matplotlib.pyplot as plt
-
+    cm=cm[1:,1:]
+    acts=acts[1:]
     conf_arr = cm
 
     norm_conf = []
@@ -720,6 +722,7 @@ def plot_CM_normal(cm, acts, title=None, ax=None):
 
 
 def plot_per_act(dataset, myevalres):
+    
     # myevalres=sorted(myevalres)
     activities = dataset.activities
     summycm = {}
@@ -765,9 +768,12 @@ def plot_per_act(dataset, myevalres):
     def mylabel(rects, cm):
         for idx, rect in enumerate(rects):
             height = rect.get_height()
-            ax.text(rect.get_x() + rect.get_width() / 2., 1.05 * height, 'c=%d' % cm[idx], ha='center', va='bottom', rotation=90)
+            # if idx==0:continue
+            # ax.text(rect.get_x() + rect.get_width() / 2., 1.05 * height, 'c=%d' % cm[idx], ha='center', va='bottom', rotation=90)
 
     for i, p in enumerate(sorted(myevalres)):
+        
+        # if i==0: continue
         e2 = (100 * CMbasedMetric(sumcm[p], average=None)['f1']).round()
         x1 = x - 1.2 * width * (len(myevalres) - i - .5)
         # print(x1 + width/2.,1.05*e2,)
@@ -794,6 +800,7 @@ def plot_per_act(dataset, myevalres):
     acts = dataset.activities_map_inverse
     a = {x.replace('Not_in_Bed', 'Not in Bed').replace('in_Bed', 'in Bed').replace('_', '\n'): acts[x] for x in acts}
     ax.set_xticklabels(a, rotation=-60)
+    ax.set_xlim(0.5,len(x))
 
     ax.legend()
 

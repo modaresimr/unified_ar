@@ -1,7 +1,7 @@
 #!/bin/bash
 #pip install -e .
 source ~/.bashrc
-conda activate tf-new
+conda activate tfn4
 if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
     export PATH="$HOME/.local/bin:$PATH"
 fi

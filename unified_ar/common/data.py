@@ -7,6 +7,8 @@ class Data:
 
     def __str__(self):
         return '<' + self.name + '> ' + str(self.__dict__)
+    def __repr__(self):
+        return '<' + self.name + '> ' + repr(self.__dict__)
     
     def __reduce__(self):
         """Return state information for pickling"""

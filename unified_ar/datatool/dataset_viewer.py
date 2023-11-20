@@ -59,7 +59,7 @@ def view(dataset, i):
     all = pd.DataFrame()
     for index, row in tmp_act_evants.iterrows():
         myse = dataset.sensor_events.loc[(dataset.sensor_events['time'] >= row['StartTime']) & (dataset.sensor_events['time'] <= row['EndTime'])].copy()
-        myse['relative'] = dataset.sensor_events['time'] - row['StartTime']
+        myse['relative'] = dataset.sensor_events['time'] - np.datetime64(row['StartTime'])
         myse['hit time'] = myse['relative'] / row['Duration']
         all = pd.concat([all, myse[['hit time', 'SID']]])
         # plt.scatter(myse['hit time'],myse['SID'])
@@ -145,7 +145,8 @@ def sensor_hitmap(dataset):
         all = pd.DataFrame()
         for index, row in tmp_act_evants.iterrows():
             myse = dataset.sensor_events.loc[(dataset.sensor_events['time'] >= row['StartTime']) & (dataset.sensor_events['time'] <= row['EndTime'])].copy()
-            myse['relative'] = dataset.sensor_events['time'] - row['StartTime']
+            start_time=row['StartTime']
+            myse['relative'] = myse['time'].apply(lambda x: x-start_time)
             myse['hit time'] = myse['relative'] / row['Duration']
             all = pd.concat([all, myse[['hit time', 'SID']]])
             # plt.scatter(myse['hit time'],myse['SID'])

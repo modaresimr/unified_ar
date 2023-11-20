@@ -39,8 +39,8 @@ class SlidingEventActivityWindow(Segmentation):
         if (shift > size):
             return False
         try:
-            shift = int(shift)
-            size = int(size)
+            params['shift'] = int(shift)
+            params['size'] = int(size)
         except:
             return False
         return super().applyParams(params)
@@ -59,7 +59,7 @@ class SlidingEventActivityWindow(Segmentation):
     #         yield range(s, e), act
 
     def _create_segments(self, sindex, eindex, act):
-
+        
         for i in range(sindex, max(sindex, eindex-self.size+1)+1, self.shift):
             s = max(i, sindex)
             e = min(i+self.size, eindex+1)
