@@ -1,4 +1,6 @@
 import pandas as pd
+from collections.abc import Sequence
+import numpy as np
 import io
 class Data:
 
@@ -6,9 +8,22 @@ class Data:
         self.name = name
 
     def __str__(self):
-        return '<' + self.name + '> ' + str(self.__dict__)
-    def __repr__(self):
-        return '<' + self.name + '> ' + repr(self.__dict__)
+        out=[]
+        for d, v in self.__dict__.items():
+            if d.startswith("_"):continue
+            if isinstance(v, pd.DataFrame):
+                out.append(f'{d}:[{v.columns}]')
+            elif isinstance(v, np.ndarray):
+                out.append(f'{d}: {type(v).__name__}({v.shape})')
+            elif isinstance(v, Sequence):
+                out.append(f'{d}: {type(v).__name__}({len(v)})')
+            else:
+                out.append(f'{d}: {v}')
+        
+        return f'<{self.name} ' + ' '.join(out)+">"
+
+    # def __repr__(self):
+    #     return '<' + self.name + '> ' + repr(self.__dict__)
     
     def __reduce__(self):
         """Return state information for pickling"""

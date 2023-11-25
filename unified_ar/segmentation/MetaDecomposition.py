@@ -38,6 +38,12 @@ class SWMeta(Segmentation):
         selectedSeg = methods.meta_segmentation_sub_tasks[0].copy()
         selectedSeg['findopt'] = False
         methods.segmentation = [selectedSeg]
+        methods.classifier = [methods.classifier[0]]
+        methods.combiner=[methods.combiner[0]]
+        methods.feature_extraction=[methods.feature_extraction[0]]
+        methods.dataset=[methods.dataset[0]]
+        methods.mlstrategy=[methods.mlstrategy[0]]
+                        
         logger.debug('train using all the data with the first segment method')
         logger.debug(f'method={selectedSeg["method"]().shortname()}')
         seg_params = [f"{p['var']}:{p['init']}" for p in selectedSeg["params"]]
@@ -64,7 +70,9 @@ class SWMeta(Segmentation):
 
         starts = s_events.time.dt.floor(self.meta_step_period).unique()
         ends = starts + self.meta_size
-
+        new_meta_dataset={'method_selector':{'targets':[],'features':[]},'params_selector':{
+            m['method']().shortname():{'targets':[],'features':[]} for m in  methods.meta_segmentation_sub_tasks
+            }}
         for s, e in zip(starts, ends):
             methods.run_names['out'] = f"{def_run_names['out']}/{s}-{e}"
             data2 = self.customSplit(s_events, a_events, s, e)
@@ -77,57 +85,85 @@ class SWMeta(Segmentation):
                 continue
             logger.debug(fast_strategy.get_info().functions)
             # result=fast_strategy.pipeline(fast_strategy.functions,self.traindata,train=True)
-            fea = {'start_time': s, 'end_time': e}
-            # aggr = data2.s_events.groupby('SID').count()
-            # fea = {k: aggr.loc[k]['value'] if k in aggr.index else 0 for k in datasetdscr.sensor_id_map_inverse}
-            # fea['time'] = s
-            meta_features.append(fea)
+            feat=self.get_meta_features(datasetdscr,s,e,data2)
+            meta_features.append(feat)
             seg = result.functions['segmentor']
             meta_targets.append({'method': seg[0], **result.quality, **{p: seg[1][p] for p in seg[1]}})
+            new_meta_dataset['method_selector']['targets'].append({'method': seg[0], **result.quality})
+            new_meta_dataset['method_selector']['features'].append(feat)
             # self.strategy=fast_strategy
+            sortedJobs = sorted(fast_strategy.opt_history, key=lambda job: job.result['optq']['q'])
+            for p in new_meta_dataset['params_selector']:
+                for job in sortedJobs:
+                    seg=job.functions.segmentor.shortname()
+                    if seg==p:
+                        new_meta_dataset['params_selector'][p]['targets'].append(job.functions.segmentor.params)
+                        new_meta_dataset['params_selector'][p]['features'].append(feat)
+                        break
+            
+
 
         methods.segmentation = def_segments
         methods.run_names = def_run_names
         # logging.getLogger().setLevel(logging.DEBUG)
         logging.getLogger().handlers[1].setLevel(logging.DEBUG)
         meta_dataset = {'meta_features': pd.DataFrame(meta_features), 'meta_targets': pd.DataFrame(meta_targets)}
+        new_meta_dataset['method_selector']={'features': pd.DataFrame(new_meta_dataset['method_selector']['features']), 'targets': pd.DataFrame(new_meta_dataset['method_selector']['targets'])}
+        for p,v in new_meta_dataset['params_selector'].items():
+            new_meta_dataset['params_selector'][p]={
+                'features': pd.DataFrame(v['features']), 'targets': pd.DataFrame(v['targets'])
+            }
 
         utils.saveState(meta_dataset, f"meta_dataset/{methods.run_names['out']}_{methods.run_names['fold']}")
-        return meta_dataset
+        utils.saveState(new_meta_dataset, f"meta_dataset/new_{methods.run_names['out']}_{methods.run_names['fold']}")
+        return new_meta_dataset
 
-    def create_train_model(self, meta_dataset):
-        feat_df = meta_dataset['meta_features']
-        target_df = meta_dataset['meta_targets']
+    def create_train_model(self,key, meta_dataset):
+        feat_df = meta_dataset['features']
+        target_df = meta_dataset['targets']
 
         ntarget = target_df.drop(['accuracy', 'precision', 'recall', 'f1'], axis=1)
 
-        self.targetTransformer = MyTargetTransformer(self.meta_mode)
-        self.targetTransformer.fit(ntarget)
-        self.featTransformer = self.create_feat_transformer(feat_df)
-        self.featTransformer.fit(feat_df)
+        self.targetTransformer[key] = MyTargetTransformer(self.meta_mode,ntarget.columns)
+        self.targetTransformer[key].fit(ntarget)
+        self.featTransformer[key] = self.create_feat_transformer(feat_df)
+        self.featTransformer[key].fit(feat_df)
         logger.debug(f"metainfo=============== \nfeat={feat_df}\n target={target_df}")
-        X = self.featTransformer.transform(feat_df)
-        y = self.targetTransformer.transform(ntarget)
+
+        X = self.featTransformer[key].transform(feat_df)
+        y = self.targetTransformer[key].transform(ntarget)
         if self.meta_mode == 'keras':
+
             from tensorflow import keras
             from tensorflow.keras import layers
+            
             inputs = keras.Input(shape=(X.shape[1],))
             layer1 = layers.Dense(16, activation='relu')(inputs)
             layer2 = layers.Dense(8, activation='relu')(layer1)
             layer3 = layers.Dense(16, activation='relu')(layer2)
-            classifier = layers.Dense(1, activation='softmax', name='method')(layer3)
-            regressions = [layers.Dense(1, activation='linear', name=x)(layer3) for x in ntarget.columns.drop('method')]
 
-            mdl = keras.Model(inputs=inputs, outputs=[classifier, *regressions])
+            if 'method' in ntarget.columns:
+                outputs=layers.Dense(1, activation='softmax', name='method')(layer3)
+                loss='categorical_crossentropy'
+            else:
+                outputs = [layers.Dense(1, activation='linear', name=x)(layer3) for x in ntarget.columns]
+                loss=['mse'] * len(outputs)
 
-            mdl.compile(loss=['categorical_crossentropy', *(['mse'] * len(regressions))], optimizer='adam', metrics=['accuracy'])
+            mdl = keras.Model(inputs=inputs, outputs=outputs)
+
+            mdl.compile(loss=loss, optimizer='adam', metrics=['accuracy'])
         else:
             from sklearn.svm import SVR
             from sklearn.multioutput import MultiOutputRegressor
             mdl = MultiOutputRegressor(SVR())
-        mdl.fit(X, y)
+        mdl.fit(X, y,epochs=20)
         return mdl
-
+    def get_meta_features(self,datasetdscr,s,e,data2):
+            fea = {'start_time': s, 'end_time': e}
+            aggr = data2.s_events.groupby('SID').count()
+            fea = {k: aggr.loc[k]['value'] if k in aggr.index else 0 for k in datasetdscr.sensor_id_map_inverse}
+            fea['time'] = s
+            return fea
     def precompute(self, datasetdscr, s_events, a_events, acts):
         self.datasetdscr = datasetdscr
 
@@ -137,7 +173,19 @@ class SWMeta(Segmentation):
             meta_dataset = utils.loadState(
                 "meta_dataset 220602_23-52-11-A4H-Namespace(classifier=0, comment='0', dataset=3, evaluation=0, feature_extraction=0, mlstrategy=0, output='logs', segmentation=0) 0")
 
-        self.ml = self.create_train_model(meta_dataset)
+        # self.ml = self.create_train_model(meta_dataset)
+        self.create_multi_model(meta_dataset)
+
+    def create_multi_model(self,meta_dataset):
+        from unified_ar.constants import methods
+        self.mml={'method_selector':self.create_train_model('method_selector',meta_dataset['method_selector']),
+                  'params_selector':{
+                        m:self.create_train_model(m,da) 
+                        for m,da in  meta_dataset['method_selector'].items()
+                    }
+                }
+        
+
 
     def create_feat_transformer(self, feat):
         import numpy as np
@@ -145,7 +193,7 @@ class SWMeta(Segmentation):
         from sklearn.preprocessing import StandardScaler, OneHotEncoder
         from sklearn.model_selection import train_test_split
         from sklearn.pipeline import make_pipeline
-        from feature_extraction.features import TimeSpliter, periodic_spline_transformer
+        from unified_ar.feature_extraction.features import TimeSpliter, periodic_spline_transformer
 
         numeric_features = feat.columns.drop(['time'])
         numeric_transformer = StandardScaler()
@@ -187,17 +235,23 @@ class SWMeta(Segmentation):
             if len(data2.s_events) == 0:
                 continue
             ranges.append([s, e])
-            aggr = data2.s_events.groupby('SID').count()
-            fea = {k: aggr.loc[k]['value'] if k in aggr.index else 0 for k in self.datasetdscr.sensor_id_map_inverse}
-            fea['time'] = s
-            meta_features.append(fea)
+            
+            meta_features.append(self.get_meta_features(self.datasetdscr,s,e,data2))
 
         feat_df = pd.DataFrame(meta_features)
         X = self.featTransformer.transform(feat_df)
-        y2 = self.ml.predict(X)
-        y = self.targetTransformer.inverse_transform(y2)
+
+        method=self.mml['method_selector'].predict(X)
+        method=self.targetTransformer['method_selector'].inverse_transform(method)
+
+        params=self.mml['param_selector'][method].predict(X)
+        params=self.targetTransformer['param_selector'][method].inverse_transform(params)
+        
+        
+        
+        # y = self.targetTransformer.inverse_transform(y2)
         ranges_df = pd.DataFrame(ranges, columns=['start', 'end'])
-        self.meta_predict = pd.concat([ranges_df, y], axis=1)
+        self.meta_predict = pd.concat([ranges_df,method,params],axis=1)
         print(self.meta_predict)
 
     def segment2(self, w_history, buffer):
@@ -242,8 +296,9 @@ class SWMeta(Segmentation):
 
 
 class MyTargetTransformer:
-    def __init__(self, mode):
+    def __init__(self, mode,columns):
         self.mode = mode
+        self.columns=columns
     is_fit = False
 
     def fit(self, y):
@@ -252,37 +307,49 @@ class MyTargetTransformer:
 
         self.is_fit = True
         self.trans = {'method': preprocessing.LabelEncoder(), 'other': preprocessing.StandardScaler()}
-
-        self.trans['method'].fit(y['method'])
-        self.trans['other'].fit(y.drop(['method'], axis=1))
+        y['size'].loc[y['size'].isna()]=0
+        y['shift'].loc[y['shift'].isna()]=0
+        if 'method' in self.columns:
+            self.trans['method'].fit(y['method'])
+        else:
+            self.trans['other'].fit(y)
         self.columns = y.columns
 
     def transform(self, y):
         if not self.is_fit:
-            raise Error('not fit')
-
-        y1 = self.trans['method'].transform(y['method'])
-
-        y2 = self.trans['other'].transform(y.drop(['method'], axis=1))
-        if self.mode == 'keras':
-            res = [y1.reshape(-1, 1)]
-            for i, c in enumerate(self.columns.drop(['method'])):
-                res.append(y2[:, i].reshape(-1, 1))
-            return res
+            raise Exception('not fit')
+        if 'method' in self.columns:
+            y1 = self.trans['method'].transform(y['method'])
+            return y1.reshape(-1, 1)
         else:
-            return y2
+            y2 = self.trans['other'].transform(y)
+            if self.mode == 'keras':
+                res = []
+                for i, c in enumerate(self.columns):
+                    res.append(y2[:, i].reshape(-1, 1))
+                return res
+            else:
+                return y2
     #         return [self.trans[c].transform(y[[c]]) for c in self.trans]
 
     def inverse_transform(self, y):
         import numpy as np
         if not self.is_fit:
-            raise Error('not fit')
+            raise Exception('not fit')
         if self.mode == 'keras':
+            if 'method' in self.columns :
+                df= pd.DataFrame(self.trans['method'].inverse_transform(y.astype(int)))    
+                df.columns = self.columns
+                return df
+            
+
             y2 = np.hstack(y)
-            y2[:, 1:] = self.trans['other'].inverse_transform(y2[:, 1:])
+            y2[:, 1:] = self.trans['other'].inverse_transform(y2[:, :])
+            y2[:, 1:] = np.clip(y2[:, 1:],0,120)
+            y2[:,2]=np.minimum(y2[:,1],y2[:,2])
+
             df = pd.DataFrame(y2)
             df.columns = self.columns
-            df['method'] = self.trans['method'].inverse_transform(y2[:, 0].astype(int) * 0)
             # df['method']='s'
             return df
         else:

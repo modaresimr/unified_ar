@@ -4,9 +4,9 @@ mkdir -p logs
 
 # Declaring arrays for datasets, segments, models, and features
 datasets=(0 1 2 3 4)
-#datasets=(0)
+datasets=(3)
 segs=(0 1 2 3 4)
-# segs=(4)
+segs=(5)
 #models=(0 1 2 3 4 5)
 # models=(0 1 2 3 4)
 models=(1)

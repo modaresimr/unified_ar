@@ -41,14 +41,9 @@ def method_param_selector(callback, uniquekey):
 
     success, fail = run(allpool, True)
 
-    bestJobscore = success[0].result['optq']['q']
-    bestJob = success[0]
-    for job in success:
-        if (bestJobscore > job.result['optq']['q']):
-            bestJobscore = job.result['optq']['q']
-            bestJob = job
+    bestJob = min(success, key=lambda job: job.result['optq']['q'])
 
-    return bestJob
+    return bestJob,success
 
 
 def runOptLearn(optl, test=0):

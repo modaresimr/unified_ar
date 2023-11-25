@@ -16,8 +16,8 @@ methods.run_names = {'out': 'temp'}
 methods.meta_segmentation_sub_tasks = [
 
     {'method': lambda: ar.segmentation.FixedEventWindow.FixedEventWindow(), 'params': [
-        {'var': 'size', 'min': 2, 'max': 30, 'type': 'int', 'init': 5, 'range': [2, 5, 8, 11, 15, 20, 30]},
-        {'var': 'shift', 'min': 2, 'max': 20, 'type': 'int', 'init': 2, 'range': [2, 5, 8, 11, 15, 20]}
+        {'var': 'size', 'min': 2, 'max': 30, 'type': 'int', 'init': 15, 'range': [2, 5, 8, 11, 15, 20, 30]},
+        {'var': 'shift', 'min': 2, 'max': 20, 'type': 'int', 'init': 7, 'range': [2, 5, 8, 11, 15, 20]}
     ], 'findopt': True},
     {'method': lambda: ar.segmentation.FixedSlidingWindow.FixedSlidingWindow(), 'params': [
         {'var': 'size', 'min': 60, 'max': 15 * 60, 'type': 'float', 'init': 120 / 4, 'range': list(range(15, 120, 15))},
@@ -156,9 +156,9 @@ methods.activity_fetcher = [
 ]
 methods.combiner = [
     
+    {'method': ar.combiner.SimpleCombiner.EmptyCombiner2, 'params': [{'priority_new': True}]},
     {'method': ar.combiner.KerasCombiner.KerasCombiner, 'params': [{'priority_new': True}]},
     # {'method': ar.combiner.KerasCombiner.KerasCombiner, 'params': [{'priority_new': False}]},
-    {'method': ar.combiner.SimpleCombiner.EmptyCombiner2, 'params': [{'priority_new': True}]},
     # {'method': ar.combiner.SimpleCombiner.EmptyCombiner2, 'params': [{'priority_new': False}]},
     # {'method':lambda: ar.combiner.SimpleCombiner.SimpleCombiner()},
     # {'method':lambda: ar.combiner.SimpleCombiner.EmptyCombiner()},

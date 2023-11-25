@@ -3,23 +3,23 @@
 current_date=$(date +"%Y%m%d-%H%M%S")
 filename=$(echo "$@" | tr ' ' '_'| tr '-' '_')
 echo $filename
-save_dir=logs/${filename}_${current_date}
+save_dir=${filename}_${current_date}
+slurm="logs/%j_${save_dir}.log"
 mkdir -p logs
 
 
-log="${save_dir}_%j.log"
 
 # options="-N 1-1 -J nogpu$filename --gpus=1"
-options="-N 1-1 -J '$filename'"
+options="-N 1-1 -J $filename --gpus=1"
 
 
-runcmd="./run.sh $@ --output=$save_dir"
+runcmd="./run.sh $@ --output=logs/$save_dir"
 
-do_srun=0
+do_srun=1
 
 if [ $do_srun == '1' ] ;then
-srun $options $runcmd
+srun -w lipn-rtx3 $options $runcmd
 else
-options="$options --output=$log --error=$log "
+options="$options --output=$slurm --error=$slurm "
 sbatch $options $runcmd
 fi

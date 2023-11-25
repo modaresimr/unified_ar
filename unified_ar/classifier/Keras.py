@@ -51,8 +51,9 @@ class KerasClassifier(Classifier):
         return ['accuracy']
 
     def _createmodel(self, inputsize, outputsize, update_model=False):
-        if update_model and hasattr(self, 'model'):
-            self.tqdmcallback = TqdmCallback(verbose=1)
+        self.outputsize = outputsize
+        self.tqdmcallback = TqdmCallback(verbose=1)
+        if update_model and not hasattr(self, 'model'):
             from unified_ar.constants import methods
             meta_path = methods.run_names.get('meta_base', '')
             if meta_path:
@@ -65,21 +66,25 @@ class KerasClassifier(Classifier):
 
             return self.model
 
-        self.outputsize = outputsize
+        
 
         model = self.getmodel(inputsize, outputsize)
-        model.summary()
+        if not methods.run_names.get('meta_base', ''):
+            model.summary()
 
         # model.compile(optimizer='adam', loss=loss, metrics=METRICS)
         model.compile(optimizer='adam', loss=self.get_loss_functions(), metrics=self.get_metrics(outputsize))
         self.model = model
-        self.tqdmcallback = TqdmCallback(verbose=1)
+        
         return model
 
     def getmodel(self, inputsize, outputsize):
         raise NotImplementedError
 
     def _train(self, trainset, trainlabel):
+        from unified_ar.constants import methods
+        if methods.run_names.get('meta_base', ''):
+            return 
         classes = np.unique(trainlabel)
         try:
             cw = compute_class_weight("balanced", classes=classes, y=trainlabel)
@@ -92,13 +97,13 @@ class KerasClassifier(Classifier):
         for i in range(self.outputsize):
             if not (i in cw):
                 cw[i] = 0
-        from unified_ar.constants import methods
+        
 
         trainlabel = tf.keras.utils.to_categorical(trainlabel, num_classes=self.outputsize)
 
         # mc = tf.keras.callbacks.ModelCheckpoint(path, monitor='val_accuracy', mode='max', verbose=1, save_best_only=True)
         # tf.keras.backend.set_value(self.model.optimizer.lr, .01)
-        es = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', mode='max', verbose=1, patience=20, restore_best_weights=True)
+        es = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', mode='max', verbose=0, patience=20, restore_best_weights=True)
 
         save_folder = ar.general.utils.get_save_folder()
 
@@ -112,7 +117,7 @@ class KerasClassifier(Classifier):
             filepath, save_weights_only=True,
             # monitor='val_f1_score',
             monitor='val_accuracy',
-            verbose=1,
+            verbose=0,
             save_best_only=True,
             mode='max')
         tensorboard_cb = tf.keras.callbacks.TensorBoard(save_folder)

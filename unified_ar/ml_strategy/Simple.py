@@ -25,14 +25,15 @@ class NormalStrategy(MLStrategy):
         self.weight = weight
         self.traindata = self.justifySet(self.acts, data)
         uniqueKey = {'strategy': 'simple', 'acts': acts, 'weight': weight, 'dataset': datasetdscr.shortname()}
-        bestOpt = method_param_selector(self.learning, uniqueKey)
+        bestOpt,opt_history = method_param_selector(self.learning, uniqueKey)
         self.functions = bestOpt.functions
+        self.opt_history=opt_history
         self.bestOpt = bestOpt
 
         if ('result' in bestOpt.result):
             result = bestOpt.result['result']
         else:
-            result = test(data)
+            result = self.test(data)
         return result
 
     def learning(self, func):
